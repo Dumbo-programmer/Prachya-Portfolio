@@ -1,63 +1,59 @@
+import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
-import { copy, talks } from '@/data/content';
+import Link from 'next/link';
+import { copy, seminars } from '@/data/content';
 import { Icon } from './icons';
 import { Reveal } from './reveal';
 import { SectionHeading } from './section-heading';
 
 export function TalksSection() {
+  const latest = seminars.slice(0, 3);
+
   return (
     <section id="talks" aria-labelledby="talks-heading" className="section-block">
       <div className="container-page">
-        <SectionHeading id="talks-heading" title={copy.sectionTitles.talks} />
+        <SectionHeading
+          id="talks-heading"
+          title={copy.sectionTitles.talks}
+          subtitle={copy.talks.intro}
+        />
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {talks.map((talk, index) => (
-            <Reveal key={talk.id} delay={index * 50}>
-              <article className="card flex h-full flex-col p-6">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="chip w-fit border-accent/30 bg-accent/10 text-accent">
-                    <Icon name="mic" className="h-3.5 w-3.5" />
-                    {talk.type}
-                  </span>
-                  <span className="text-xs text-faint">{talk.date}</span>
+          {latest.map((seminar, index) => (
+            <Reveal key={seminar.id} delay={index * 50}>
+              <article className="card flex h-full flex-col overflow-hidden">
+                <div className="relative aspect-[16/9] border-b border-line bg-surface-raised">
+                  <Image
+                    src={seminar.photos[0] ?? '/images/writing-placeholder.svg'}
+                    alt={`${seminar.title} photo`}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
                 </div>
 
-                {talk.image ? (
-                  <div className="relative mt-4 overflow-hidden rounded-card border border-line">
-                    <Image
-                      src={talk.image}
-                      alt={`${talk.title} photo`}
-                      width={480}
-                      height={270}
-                      className="h-auto w-full object-cover"
-                    />
-                  </div>
-                ) : null}
-
-                <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted">
-                  {talk.venue}
-                </p>
-                <h3 className="mt-1 text-base font-semibold text-foreground">
-                  {talk.title}
-                </h3>
-                <p className="line-clamp-1 mt-2 text-sm text-muted">
-                  {talk.description}
-                </p>
-
-                {talk.href ? (
-                  <a
-                    href={talk.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-auto inline-flex items-center gap-1.5 pt-5 text-xs font-semibold text-accent hover:underline"
-                  >
-                    {copy.labels.readMore}
-                    <Icon name="externalLink" className="h-3.5 w-3.5" />
-                  </a>
-                ) : null}
+                <div className="flex flex-1 flex-col p-6">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                    {seminar.host}
+                  </p>
+                  <h3 className="mt-2 text-base font-semibold leading-snug text-foreground">
+                    {seminar.title}
+                  </h3>
+                  <p className="mt-2 flex items-center gap-2 text-xs text-faint">
+                    <Icon name="calendar" className="h-3.5 w-3.5" />
+                    {seminar.date}
+                  </p>
+                </div>
               </article>
             </Reveal>
           ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link href="/talks" className="btn-secondary">
+            {copy.talks.viewAll}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </div>
     </section>

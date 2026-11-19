@@ -49,6 +49,7 @@ export function getAllArticles(): Article[] {
         excerpt: asString(data.excerpt),
         tags: asTags(data.tags),
         featured: data.featured === true,
+        sample: data.sample === true,
         language: (language === 'bn' ? 'bn' : 'en') as ArticleLanguage,
         coverImage: asString(data.coverImage) || undefined,
         content,

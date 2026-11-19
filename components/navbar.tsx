@@ -3,62 +3,88 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, Menu, X } from 'lucide-react';
-import {
-  useEffect,
-  useRef,
-  useState,
-  type MouseEvent,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { copy, navigation, profile, type NavItem } from '@/data/content';
-import {
-  activateTab,
-  DEFAULT_TAB,
-  isTabId,
-  tabHref,
-  TAB_EVENT,
-} from '@/lib/tabs';
 import { Icon } from './icons';
 
-function isModifiedClick(event: MouseEvent<HTMLAnchorElement>): boolean {
+function sectionId(href: string): string | undefined {
+  return href.startsWith('/#') ? href.slice(2) : undefined;
+}
+
+function itemSectionId(item: NavItem): string | undefined {
+  return item.activeSection ?? sectionId(item.href);
+}
+
+function matchesRoute(pathname: string, item: NavItem): boolean {
   return (
-    event.button !== 0 ||
-    event.metaKey ||
-    event.ctrlKey ||
-    event.shiftKey ||
-    event.altKey
+    item.activeOn?.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    ) ?? false
   );
 }
 
-export function Navbar() {
+export function Navbar({ showWriting = true }: { showWriting?: boolean }) {
   const pathname = usePathname();
   const isHome = pathname === '/';
-  const [active, setActive] = useState<string>(DEFAULT_TAB);
+  const [active, setActive] = useState<string>('home');
   const [moreOpen, setMoreOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
 
+  const moreItems = useMemo(
+    () =>
+      navigation.more.filter(
+        (item) => showWriting || item.label !== 'Writing',
+      ),
+    [showWriting],
+  );
+
+  // Highlight whichever section is currently at the top of the viewport.
   useEffect(() => {
-    const syncFromUrl = () => {
-      if (!isHome) {
-        setActive('writing');
-        return;
+    if (!isHome) {
+      setActive('');
+      return;
+    }
+
+    const sectionIds = new Set(
+      [...navigation.primary, ...moreItems]
+        .map(itemSectionId)
+        .filter((id): id is string => Boolean(id)),
+    );
+
+    const updateActive = () => {
+      const sections = Array.from(
+        document.querySelectorAll<HTMLElement>('main section[id]'),
+      ).filter((section) => sectionIds.has(section.id));
+
+      if (sections.length === 0) return;
+
+      const marker = Math.min(window.innerHeight * 0.35, 260);
+      let current = sections[0].id;
+
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= marker) {
+          current = section.id;
+        }
       }
-      const tab = new URLSearchParams(window.location.search).get('tab');
-      setActive(isTabId(tab) ? tab : DEFAULT_TAB);
+
+      // The last section can be shorter than the marker when scrolled to the end.
+      const atBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2;
+      if (atBottom) current = sections[sections.length - 1].id;
+
+      setActive(current);
     };
 
-    const onTabChange = (event: Event) => {
-      setActive((event as CustomEvent<string>).detail);
-    };
-
-    syncFromUrl();
-    window.addEventListener(TAB_EVENT, onTabChange);
-    window.addEventListener('popstate', syncFromUrl);
+    updateActive();
+    window.addEventListener('scroll', updateActive, { passive: true });
+    window.addEventListener('resize', updateActive);
     return () => {
-      window.removeEventListener(TAB_EVENT, onTabChange);
-      window.removeEventListener('popstate', syncFromUrl);
+      window.removeEventListener('scroll', updateActive);
+      window.removeEventListener('resize', updateActive);
     };
-  }, [isHome]);
+  }, [isHome, moreItems]);
 
   useEffect(() => {
     const onPointerDown = (event: PointerEvent) => {
@@ -76,30 +102,19 @@ export function Navbar() {
   }, [pathname]);
 
   const renderLink = (item: NavItem, onNavigate: () => void) => {
-    const isActive = active === item.target;
-    const a11yProps = isHome
-      ? {
-          id: `tab-${item.target}`,
-          'aria-controls': `panel-${item.target}`,
-          'aria-current': isActive ? ('location' as const) : undefined,
-        }
-      : {
-          'aria-current': isActive ? ('page' as const) : undefined,
-        };
-
-    const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-      onNavigate();
-      if (!isHome || isModifiedClick(event)) return;
-      event.preventDefault();
-      activateTab(item.target);
-    };
+    const id = itemSectionId(item);
+    const routeActive = matchesRoute(pathname, item);
+    const sectionActive = isHome && Boolean(id) && active === id;
+    const isActive = routeActive || sectionActive;
 
     return (
       <Link
-        key={item.target}
-        href={tabHref(item.target)}
-        onClick={handleClick}
-        {...a11yProps}
+        key={item.href}
+        href={item.href}
+        onClick={onNavigate}
+        aria-current={
+          routeActive ? ('page' as const) : sectionActive ? ('location' as const) : undefined
+        }
         className={`inline-flex items-center gap-1.5 rounded-pill px-3 py-2 text-sm font-medium transition duration-200 ${
           isActive
             ? 'bg-accent/10 text-accent'
@@ -111,6 +126,12 @@ export function Navbar() {
       </Link>
     );
   };
+
+  const moreActive = moreItems.some(
+    (item) =>
+      matchesRoute(pathname, item) ||
+      (isHome && itemSectionId(item) === active),
+  );
 
   return (
     <header className="fixed left-1/2 top-3 z-50 w-[calc(100%-1.5rem)] max-w-[980px] -translate-x-1/2">
@@ -126,12 +147,7 @@ export function Navbar() {
       >
         <Link
           href="/"
-          onClick={(event) => {
-            setMobileOpen(false);
-            if (!isHome || isModifiedClick(event)) return;
-            event.preventDefault();
-            activateTab(DEFAULT_TAB);
-          }}
+          onClick={() => setMobileOpen(false)}
           className="flex shrink-0 items-center gap-2 rounded-pill py-1 pl-1 pr-2"
           aria-label={`${profile.name} — home`}
         >
@@ -153,7 +169,7 @@ export function Navbar() {
               aria-expanded={moreOpen}
               aria-controls="nav-more-menu"
               className={`inline-flex items-center gap-1.5 rounded-pill px-3 py-2 text-sm font-medium transition duration-200 ${
-                navigation.more.some((item) => item.target === active)
+                moreActive
                   ? 'bg-accent/10 text-accent'
                   : 'text-muted hover:bg-surface-raised hover:text-foreground'
               }`}
@@ -171,7 +187,7 @@ export function Navbar() {
                 id="nav-more-menu"
                 className="absolute right-0 top-full mt-2 w-64 rounded-card border border-line bg-surface p-2 shadow-card"
               >
-                {navigation.more.map((item) =>
+                {moreItems.map((item) =>
                   renderLink(item, () => setMoreOpen(false)),
                 )}
               </div>
@@ -200,7 +216,7 @@ export function Navbar() {
           id="nav-mobile-menu"
           className="mt-2 flex flex-col gap-1 rounded-card border border-line bg-surface p-3 shadow-card lg:hidden"
         >
-          {[...navigation.primary, ...navigation.more].map((item) =>
+          {[...navigation.primary, ...moreItems].map((item) =>
             renderLink(item, () => setMobileOpen(false)),
           )}
         </div>

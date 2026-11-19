@@ -1,14 +1,9 @@
 /**
  * SINGLE SOURCE OF TRUTH FOR ALL EDITABLE SITE CONTENT.
  *
- * Concrete details from the brief (name, title, GitHub profile, canonical
- * domain) are filled in. Everything else remains a placeholder until Prachya
- * replaces it. Items flagged with `placeholder: true` are invented examples
- * and MUST be replaced with verified numbers before publishing.
- *
- * Components should read from this file only. Adding an item here updates the
- * site without touching component code. Articles are the exception: they live
- * as MDX files in `content/writing/` (added in Stage 3).
+ * Text in [square brackets] is still missing from Prachya. Keep the slot and
+ * render it visibly; replace the value when the real content arrives. Do not
+ * invent numbers, awards or links that are not in the content doc.
  */
 
 /* -------------------------------------------------------------------------- */
@@ -49,7 +44,14 @@ export type IconName =
   | 'book'
   | 'target'
   | 'coffee'
-  | 'heart';
+  | 'heart'
+  | 'python'
+  | 'pytorch'
+  | 'tensorflow'
+  | 'numpy'
+  | 'git'
+  | 'googlecolab'
+  | 'langchain';
 
 export interface LinkItem {
   label: string;
@@ -60,84 +62,43 @@ export interface LinkItem {
 export interface Profile {
   name: string;
   shortName: string;
-  greeting: string;
   title: string;
   tagline: string;
   metaDescription: string;
   seoKeywords: string[];
   location: string;
   email: string;
-  photo: string;
+  emailHref: string;
+  /** Theme-specific portraits; the hero shows one at a time. */
+  photoLight: string;
+  photoDark: string;
   photoAlt: string;
   photoCaption: string;
   heroBadges: string[];
-  highlight: {
-    label: string;
-    title: string;
-    description: string;
-    href?: string;
-    linkLabel?: string;
-  };
-  /** Sentence fragments; a fragment with href renders as an inline link. */
-  introSegments: Array<{ text: string; href?: string }>;
   bio: string[];
-  nameVariants: string[];
   contactInvitation: string;
   footerTagline: string;
 }
 
-export interface Stat {
-  value: string;
-  label: string;
-  /** PLACEHOLDER: replace with a verified number before publishing. */
-  placeholder?: boolean;
-}
-
-export interface AtAGlanceItem {
-  icon: IconName;
-  label: string;
-  value: string;
-}
-
-export interface EducationItem {
-  degree: string;
-  institution: string;
-  start: string;
-  end: string;
-  status: string;
-  description?: string;
-  links?: LinkItem[];
-}
-
 export interface ExperienceItem {
   organization: string;
-  logo: string;
+  logo?: string;
   role: string;
-  tag: string;
-  start: string;
-  end: string;
-  location: string;
-  links: LinkItem[];
-  /** Simple **bold** markdown is supported. */
-  bullets: string[];
+  period: string;
+  description: string;
+  links?: LinkItem[];
 }
 
-export interface Achievement {
+export interface AchievementRow {
   id: string;
   title: string;
-  description: string;
-  icon: IconName;
-  logo?: string;
-  href?: string;
-  linkLabel?: string;
-  date?: string;
-  links?: LinkItem[];
+  year: string;
+  detail: string;
 }
 
 export interface Achievements {
-  featured: Achievement;
-  grid: Achievement[];
-  compact: Achievement[];
+  awards: AchievementRow[];
+  competitions: AchievementRow[];
 }
 
 export interface SkillItem {
@@ -148,48 +109,51 @@ export interface SkillItem {
 export interface SkillGroup {
   title: string;
   icon: IconName;
+  /** 1, 2 or 3 — the desktop column this card belongs to. */
+  column: 1 | 2 | 3;
   skills: SkillItem[];
-}
-
-export interface ProjectMetric {
-  label: string;
-  value: string;
-  /** PLACEHOLDER: replace with a verified number before publishing. */
-  placeholder?: boolean;
 }
 
 export interface Project {
   id: string;
-  type: string;
   title: string;
   description: string;
   tech: string[];
-  metrics?: ProjectMetric[];
   links: LinkItem[];
-  image?: string;
 }
 
 export interface LeadershipItem {
   id: string;
-  category: string;
   title: string;
-  organization: string;
-  start: string;
-  end: string;
   description: string;
-  icon?: IconName;
+  icon: IconName;
+}
+
+export interface SeminarLink {
+  label: string;
+  /** Missing links stay visible as disabled placeholders. */
   href?: string;
 }
 
-export interface Talk {
+export interface Seminar {
   id: string;
-  type: string;
-  venue: string;
   title: string;
-  description: string;
+  host: string;
   date: string;
-  href?: string;
-  image?: string;
+  topic: string;
+  description: string;
+  photos: string[];
+  links: SeminarLink[];
+}
+
+export interface Book {
+  id: string;
+  cover: string;
+  title: string;
+  author: string;
+  topic: string;
+  status: string;
+  noteHref?: string;
 }
 
 export interface SocialLink {
@@ -217,59 +181,58 @@ export interface DecorativeContent {
 
 export interface NavItem {
   label: string;
-  target: string;
+  href: string;
   icon: IconName;
+  /** Route prefixes that should also mark this item active. */
+  activeOn?: string[];
+  /** Home-page section to highlight, when the link itself is a route. */
+  activeSection?: string;
 }
 
 export interface Navigation {
   primary: NavItem[];
   more: NavItem[];
-  writingHref: string;
 }
 
 /** Structural headings and UI labels. Kept here so components hold no copy. */
 export interface SiteCopy {
   sectionTitles: {
-    biography: string;
     experience: string;
     achievements: string;
     skills: string;
     projects: string;
     leadership: string;
     writing: string;
+    notes: string;
     talks: string;
+    blog: string;
     contact: string;
   };
   labels: {
-    atAGlance: string;
-    education: string;
-    experience: string;
-    profiles: string;
     viewProjects: string;
-    readBiography: string;
+    contactMe: string;
     more: string;
     readMore: string;
-    showLess: string;
-    moreAchievements: string;
     moreProjects: string;
-    duration: string;
-    location: string;
+  };
+  achievements: {
+    awardsTitle: string;
+    competitionsTitle: string;
+    achievement: string;
+    year: string;
+    detail: string;
   };
   form: {
     name: string;
     email: string;
-    subject: string;
-    subjectOptional: string;
     message: string;
     send: string;
     sending: string;
     namePlaceholder: string;
     emailPlaceholder: string;
-    subjectPlaceholder: string;
     messagePlaceholder: string;
     nameError: string;
     emailError: string;
-    subjectError: string;
     messageError: string;
     invalidForm: string;
     serverError: string;
@@ -278,11 +241,12 @@ export interface SiteCopy {
     honeypot: string;
   };
   footer: {
-    rights: string;
+    line: string;
   };
   writing: {
     subtitle: string;
     featuredLabel: string;
+    sampleLabel: string;
     readEssay: string;
     moreFromJournal: string;
     articleSingular: string;
@@ -292,6 +256,7 @@ export interface SiteCopy {
     searchPlaceholder: string;
     allTags: string;
     noArticles: string;
+    moreComing: string;
     minuteRead: string;
     share: string;
     copyLink: string;
@@ -304,16 +269,50 @@ export interface SiteCopy {
     published: string;
     tableOfContents: string;
   };
+  notes: {
+    subtitle: string;
+    notesTitle: string;
+    allGroups: string;
+    noNotes: string;
+    backToNotes: string;
+    viewRepo: string;
+    sampleLabel: string;
+    booksTitle: string;
+    booksSubtitle: string;
+    booksEmpty: string;
+  };
+  talks: {
+    intro: string;
+    viewAll: string;
+    eventPost: string;
+    video: string;
+    facebookPost: string;
+    photos: string;
+    noTalks: string;
+  };
+  blog: {
+    subtitle: string;
+    allCategories: string;
+    noPosts: string;
+    backToBlog: string;
+    viewAllPosts: string;
+    sampleLabel: string;
+    photos: string;
+  };
   a11y: {
     openMenu: string;
     closeMenu: string;
     scrollToTop: string;
     switchToLight: string;
     switchToDark: string;
-    backToTop: string;
     placeholderValue: string;
     filterByTag: string;
+    filterByGroup: string;
+    filterByCategory: string;
     articleNavigation: string;
+    noteNavigation: string;
+    blogNavigation: string;
+    talkNavigation: string;
   };
 }
 
@@ -324,157 +323,119 @@ export interface SiteCopy {
 export const profile: Profile = {
   name: 'Prachya Biswas',
   shortName: 'PB',
-  greeting: "Hello, I'm",
-  title: 'ML and AI Engineer',
-  tagline: 'Building useful machine learning systems, one experiment at a time.',
+  title: 'Computer Science student at BRAC University, Dhaka',
+  tagline: 'Machine Learning • Data Science • Mathematics • Teaching',
   metaDescription:
-    'Prachya Biswas is an ML and AI Engineer building practical machine learning systems, open-source projects and competition-ready models. Explore projects, experience, achievements and writing.',
+    'Prachya Biswas is a Computer Science student at BRAC University, Dhaka, working on machine learning and data science and serving as an academic team member at the Bangladesh Mathematical Olympiad.',
   seoKeywords: [
     'Prachya Biswas',
-    'ML Engineer',
-    'AI Engineer',
     'Machine Learning',
-    'Deep Learning',
-    'PyTorch',
+    'Data Science',
+    'Mathematics',
+    'Teaching',
+    'BRAC University',
     'Portfolio',
   ],
   location: 'Dhaka, Bangladesh',
-  email: 'hello@example.com', // PLACEHOLDER: replace with real email.
-  photo: '/images/photo-placeholder.svg',
-  photoAlt: 'Portrait placeholder for Prachya Biswas',
-  photoCaption: 'ML and AI Engineer',
-  heroBadges: ['Machine Learning', 'Deep Learning', 'Open Source'],
-  highlight: {
-    label: 'Recent highlight',
-    title: 'Competition winner placeholder',
-    description: 'Replace this line with a verified, recent achievement.',
-    href: '#achievements',
-    linkLabel: 'See achievements',
-  },
-  introSegments: [
-    { text: "I'm an ML and AI engineer interested in turning research ideas into working products. My work spans " },
-    { text: 'the lab', href: 'https://example.com/lab' },
-    { text: ', open-source experiments and competitions with ' },
-    { text: 'industry teams', href: 'https://example.com/organization' },
-    { text: '. I care about clear experiments, honest metrics and systems people can actually use.' },
-  ],
+  email: '[email]',
+  emailHref: 'mailto:[email]',
+  photoLight: '/images/prachya_light.jpg',
+  photoDark: '/images/prachya_dark.jpg',
+  photoAlt: 'Portrait of Prachya Biswas',
+  photoCaption: 'Prachya Biswas',
+  heroBadges: ['Machine Learning', 'Data Science', 'Mathematics', 'Teaching'],
   bio: [
-    'I am an ML and AI engineer who enjoys the space between research and production. I like taking a paper, reproducing the idea, and then asking what it takes to make it reliable for real users.',
-    'My focus includes deep learning, computer vision and data science workflows. I have worked across competitions, open-source projects and team settings, and I like explaining technical decisions in plain language.',
-    'Outside of code, I mentor, write about what I learn and speak at community events. I am always happy to talk about interesting problems, partnerships and teams building thoughtful AI products.',
+    'Hello! I am a Computer Science student at BRAC University in Dhaka and Research Secretary at the ML & AI Research Lab, Bangladesh. I work as a data scientist on projects like MediSense BD, a national health forecasting platform, and Vangari AI, a waste classification project.',
+    'I am also an academic team member at the Bangladesh Mathematical Olympiad and teach mathematics to students through study materials, prep classes and seminars at CUET and Chittagong University.',
   ],
-  nameVariants: ['Prachya', 'Prachya Biswas', 'P. Biswas'],
-  contactInvitation: 'Have a role, a research idea or just a question? I would love to hear from you.',
-  footerTagline: 'ML and AI Engineer building systems that learn and help.',
+  contactInvitation:
+    'Have a project, a research idea or a question about math olympiads? Send me a message.',
+  footerTagline: 'Machine Learning • Data Science • Mathematics • Teaching',
 };
-
-/** PLACEHOLDER STATS — replace all values with verified numbers before publishing. */
-export const stats: Stat[] = [
-  { value: '3+', label: 'Years in ML', placeholder: true },
-  { value: '10+', label: 'Projects shipped', placeholder: true },
-  { value: '5+', label: 'Competition wins', placeholder: true },
-];
-
-export const atAGlance: AtAGlanceItem[] = [
-  { icon: 'mapPin', label: 'Based in', value: 'Dhaka, Bangladesh' },
-  { icon: 'briefcase', label: 'Focus', value: 'ML and AI Engineering' },
-  { icon: 'graduationCap', label: 'Background', value: 'CS and ML fundamentals' },
-  { icon: 'code', label: 'Toolbox', value: 'Python, PyTorch, SQL' },
-  { icon: 'globe', label: 'Languages', value: 'English, Bengali' },
-  { icon: 'coffee', label: 'Currently', value: 'Open to ML roles' },
-];
-
-export const education: EducationItem[] = [
-  {
-    degree: 'BSc in Computer Science and Engineering (placeholder)',
-    institution: 'University Name',
-    start: '2019',
-    end: '2024',
-    status: 'Completed',
-    description: 'Relevant coursework: machine learning, deep learning, statistics and data structures.',
-    links: [{ label: 'University', href: 'https://example.com/university' }],
-  },
-  {
-    degree: 'Machine Learning Specialization (placeholder)',
-    institution: 'Online Program',
-    start: '2023',
-    end: '2023',
-    status: 'Certified',
-    description: 'Supervised learning, neural networks and practical ML project work.',
-  },
-];
 
 export const experience: ExperienceItem[] = [
   {
-    organization: 'Organization One',
+    organization: 'ML & AI Research Lab, Bangladesh',
     logo: '/logos/placeholder.svg',
-    role: 'Machine Learning Engineer',
-    tag: 'AI Product',
-    start: '2025-01',
-    end: 'present',
-    location: 'Dhaka, Bangladesh',
-    links: [{ label: 'Website', href: 'https://example.com' }],
-    bullets: [
-      'Built and shipped an **ML feature** using **PyTorch** and FastAPI, placeholder result **+0**.',
-      'Improved inference latency by **0%** (placeholder) with batching and model quantization.',
-      'Collaborated with product and data teams to define success metrics and monitor drift.',
-    ],
+    role: 'Research Secretary',
+    period: '[period]',
+    description:
+      'Secretary of a research lab for machine learning and AI in Bangladesh.',
   },
   {
-    organization: 'Organization Two',
+    organization: 'Bangladesh Mathematical Olympiad',
     logo: '/logos/placeholder.svg',
-    role: 'AI Research Intern',
-    tag: 'Research',
-    start: '2024-06',
-    end: '2024-12',
-    location: 'Remote',
-    links: [{ label: 'Project', href: 'https://example.com/project' }],
-    bullets: [
-      'Reproduced baseline results for a **computer vision** paper and documented findings.',
-      'Trained and evaluated **3 placeholder** model variants on a curated dataset.',
-    ],
+    role: 'Academic Team Member',
+    period: '[period]',
+    description: 'Academic team member at the national math olympiad.',
   },
   {
-    organization: 'Independent',
+    organization: 'MediSense BD',
     logo: '/logos/placeholder.svg',
-    role: 'ML Engineer and Competitor',
-    tag: 'Competitions',
-    start: '2022-01',
-    end: '2024-05',
-    location: 'Dhaka, Bangladesh',
-    links: [{ label: 'Kaggle', href: 'https://www.kaggle.com/' }],
-    bullets: [
-      'Participated in **machine learning competitions** and maintained public notebooks.',
-      'Built reproducible pipelines with **scikit-learn**, pandas and experiment tracking.',
-    ],
+    role: 'Data Scientist',
+    period: '[period]',
+    description:
+      'Implemented the TRACE model for a national health and epidemic forecasting platform.',
+  },
+  {
+    organization: 'Vangari AI (IDSOL 2026)',
+    logo: '/logos/placeholder.svg',
+    role: 'Data Scientist',
+    period: '2026',
+    description:
+      'Data science side of a waste classification project, compared ViT-Small and EfficientNet-B0 for the image classifier.',
+  },
+  {
+    organization: 'IEEE BRAC University Student Branch',
+    logo: '/logos/placeholder.svg',
+    role: 'Secretariat',
+    period: '[period]',
+    description: 'Part of the branch secretariat.',
+  },
+  {
+    organization:
+      'BRAC University Entrepreneurship Development Forum (BUEDF)',
+    logo: '/logos/placeholder.svg',
+    role: 'Sub-Executive, Human Resources',
+    period: '[period]',
+    description: '[one line from Prachya]',
   },
 ];
 
 export const achievements: Achievements = {
-  featured: {
-    id: 'featured-placeholder',
-    title: 'Featured achievement placeholder',
-    description: 'Replace with the single achievement that best supports an ML Engineer application. Include a verified result and a link.',
-    icon: 'trophy',
-    href: 'https://example.com/achievement',
-    linkLabel: 'View details',
-    date: '2026',
-  },
-  grid: [
-    { id: 'a1', title: 'Competition result', description: 'Placeholder description of a verified competition result. Explain the problem, your approach and the outcome in two or three lines.', icon: 'award', href: 'https://example.com/a1', linkLabel: 'Read more' },
-    { id: 'a2', title: 'Research recognition', description: 'Placeholder description of a paper, poster or research acknowledgement. Add the venue and your contribution.', icon: 'book', href: 'https://example.com/a2', linkLabel: 'Read more' },
-    { id: 'a3', title: 'Open-source milestone', description: 'Placeholder description of an open-source milestone such as stars, contributors or adoption. Replace with real numbers.', icon: 'github', href: 'https://example.com/a3', linkLabel: 'Read more' },
-    { id: 'a4', title: 'Hackathon placement', description: 'Placeholder description of a hackathon placement. Name the event, the team size and what you built.', icon: 'sparkles', href: 'https://example.com/a4', linkLabel: 'Read more' },
-    { id: 'a5', title: 'Talk or workshop', description: 'Placeholder description of a community talk or workshop, including the audience size and topic.', icon: 'mic', href: 'https://example.com/a5', linkLabel: 'Read more' },
-    { id: 'a6', title: 'Scholarship or grant', description: 'Placeholder description of a scholarship, grant or fellowship. Add the selecting organization and year.', icon: 'graduationCap', href: 'https://example.com/a6', linkLabel: 'Read more' },
+  awards: [
+    {
+      id: 'bdmo-champion',
+      title: 'Champion, Bangladesh Mathematical Olympiad (BdMO)',
+      year: '[year, category]',
+      detail: 'National champion.',
+    },
+    {
+      id: 'blockchain-ai-finalist',
+      title: 'Finalist, Bangladesh Blockchain and AI Olympiad',
+      year: '[year]',
+      detail: 'AI category.',
+    },
   ],
-  compact: [
-    { id: 'c1', title: 'Competition finalist', description: 'Short verified line about the event.', icon: 'target', href: 'https://example.com/c1' },
-    { id: 'c2', title: 'Community contributor', description: 'Short verified line about the contribution.', icon: 'users', href: 'https://example.com/c2' },
-    { id: 'c3', title: 'Top project award', description: 'Short verified line about the project.', icon: 'trophy', href: 'https://example.com/c3' },
-    { id: 'c4', title: 'Volunteer mentor', description: 'Short verified line about the program.', icon: 'lightbulb', href: 'https://example.com/c4' },
-    { id: 'c5', title: 'Paper reviewer', description: 'Short verified line about the venue.', icon: 'book', href: 'https://example.com/c5' },
-    { id: 'c6', title: 'Dataset release', description: 'Short verified line about the dataset.', icon: 'database', href: 'https://example.com/c6' },
+  competitions: [
+    {
+      id: 'idsol-2026',
+      title: 'IDSOL (International Data Science Olympiad)',
+      year: '2026',
+      detail: 'Presented Vangari AI; data science side of the team.',
+    },
+    {
+      id: 'imlo-2026',
+      title: 'International Machine Learning Olympiad (IMLO)',
+      year: '2026',
+      detail: 'Team of 3.',
+    },
+    {
+      id: 'nasa-space-apps-2026',
+      title: 'NASA Space Apps Challenge, Dhaka',
+      year: '2026',
+      detail: 'Data Science Lead, team Agnishikha, project AstraFlame.',
+    },
   ],
 };
 
@@ -482,220 +443,371 @@ export const skills: SkillGroup[] = [
   {
     title: 'Languages',
     icon: 'code',
-    skills: [
-      { name: 'Python', icon: 'code' },
-      { name: 'SQL', icon: 'database' },
-      { name: 'TypeScript', icon: 'code' },
-      { name: 'Bash', icon: 'terminal' },
-    ],
+    column: 1,
+    skills: [{ name: 'Python', icon: 'python' }],
   },
   {
-    title: 'ML and Deep Learning',
+    title: 'Machine Learning',
     icon: 'brain',
+    column: 1,
     skills: [
-      { name: 'PyTorch', icon: 'brain' },
-      { name: 'TensorFlow', icon: 'brain' },
-      { name: 'scikit-learn', icon: 'brain' },
-      { name: 'Transformers', icon: 'sparkles' },
+      { name: 'Linear Regression' },
+      { name: 'Logistic Regression' },
+      { name: 'KNN' },
+      { name: 'SVM' },
+      { name: 'Neural Networks' },
+      { name: 'Time Series Analysis' },
     ],
   },
   {
     title: 'Data Science',
     icon: 'chart',
+    column: 1,
     skills: [
-      { name: 'pandas', icon: 'chart' },
-      { name: 'NumPy', icon: 'chart' },
-      { name: 'Matplotlib', icon: 'chart' },
-      { name: 'Statistics', icon: 'chart' },
+      { name: 'NumPy', icon: 'numpy' },
+      { name: 'Data Pipelines' },
+      { name: 'Model Evaluation' },
     ],
   },
   {
-    title: 'Databases',
-    icon: 'database',
+    title: 'AI',
+    icon: 'sparkles',
+    column: 2,
     skills: [
-      { name: 'PostgreSQL', icon: 'database' },
-      { name: 'MongoDB', icon: 'database' },
-      { name: 'Redis', icon: 'database' },
-      { name: 'DuckDB', icon: 'database' },
+      { name: 'RAG Pipelines' },
+      { name: 'AI Agents' },
+      { name: 'Agentic AI' },
+      { name: 'LangChain', icon: 'langchain' },
     ],
   },
   {
-    title: 'Tools and DevOps',
-    icon: 'terminal',
-    skills: [
-      { name: 'Git', icon: 'code' },
-      { name: 'Docker', icon: 'layers' },
-      { name: 'FastAPI', icon: 'terminal' },
-      { name: 'GitHub Actions', icon: 'terminal' },
-    ],
-  },
-  {
-    title: 'Others',
+    title: 'Deep Learning',
     icon: 'layers',
+    column: 2,
     skills: [
-      { name: 'Hugging Face', icon: 'sparkles' },
-      { name: 'Weights and Biases', icon: 'chart' },
-      { name: 'Figma', icon: 'layers' },
-      { name: 'Technical Writing', icon: 'pen' },
+      { name: 'PyTorch', icon: 'pytorch' },
+      { name: 'timm' },
+      { name: 'TensorFlow', icon: 'tensorflow' },
+      { name: 'Vision Transformer (ViT)' },
+      { name: 'EfficientNet' },
     ],
+  },
+  {
+    title: 'Tools',
+    icon: 'terminal',
+    column: 3,
+    skills: [
+      { name: 'Git', icon: 'git' },
+      { name: 'GitHub', icon: 'github' },
+      { name: 'Google Colab', icon: 'googlecolab' },
+    ],
+  },
+  {
+    title: 'Mathematics',
+    icon: 'target',
+    column: 3,
+    skills: [
+      { name: 'Olympiad Problem Solving' },
+      { name: 'Teaching' },
+    ],
+  },
+  {
+    title: 'Spoken Languages',
+    icon: 'globe',
+    column: 3,
+    skills: [{ name: 'Bangla' }, { name: 'English' }],
   },
 ];
 
 export const projects: Project[] = [
   {
-    id: 'p1',
-    type: 'Research',
-    title: 'Research project placeholder',
-    description: 'Two or three lines describing the research question, the method and the verified result. Replace this placeholder with real work.',
-    tech: ['Python', 'PyTorch', 'Transformers'],
-    metrics: [{ label: 'Accuracy', value: '0%', placeholder: true }],
-    links: [{ label: 'Paper', href: 'https://example.com/paper' }, { label: 'Repository', href: 'https://github.com/' }],
+    id: 'medisense-bd',
+    title: 'MediSense BD',
+    description:
+      'National health and epidemic forecasting platform; Prachya implemented the TRACE forecasting model as data scientist.',
+    tech: ['Python', 'time series'],
+    links: [],
   },
   {
-    id: 'p2',
-    type: 'AI Product',
-    title: 'AI product placeholder',
-    description: 'Describe the product, the users it serves and the ML approach. Keep the wording concrete and replace all placeholders.',
-    tech: ['FastAPI', 'scikit-learn', 'Next.js'],
-    metrics: [{ label: 'Users', value: '0', placeholder: true }],
-    links: [{ label: 'Repository', href: 'https://github.com/' }, { label: 'Demo', href: 'https://example.com/demo' }],
+    id: 'vangari-ai',
+    title: 'Vangari AI',
+    description:
+      'Waste classification project that grew into a full-stack waste marketplace app; classifies waste into organic, recyclable and non-recyclable.',
+    tech: ['PyTorch', 'timm', 'ViT-Small', 'EfficientNet-B0'],
+    links: [
+      {
+        label: 'GitHub',
+        href: 'https://github.com/prachyabiswas',
+        icon: 'github',
+      },
+    ],
   },
   {
-    id: 'p3',
-    type: 'Open Source',
-    title: 'Open-source library placeholder',
-    description: 'Explain the problem the library solves, its main API and how people use it. Add real adoption numbers when available.',
-    tech: ['Python', 'pytest', 'GitHub Actions'],
-    metrics: [{ label: 'Stars', value: '0', placeholder: true }],
-    links: [{ label: 'Repository', href: 'https://github.com/' }],
+    id: 'astraflame',
+    title: 'AstraFlame',
+    description:
+      'AI dashboard that ranks spacecraft fire risk of materials using NASA combustion data (Saffire and BASS), built for NASA Space Apps Challenge 2026 with team Agnishikha.',
+    tech: ['Python', 'machine learning', 'NASA data'],
+    links: [],
   },
   {
-    id: 'p4',
-    type: 'Competition',
-    title: 'Competition solution placeholder',
-    description: 'Summarize the competition task, your feature engineering and modelling strategy, and the verified public or private score.',
-    tech: ['Python', 'LightGBM', 'pandas'],
-    metrics: [{ label: 'Rank', value: '—', placeholder: true }],
-    links: [{ label: 'Write-up', href: 'https://example.com/writeup' }],
+    id: 'agentic-ai-from-scratch',
+    title: 'Agentic-AI-From-Scratch',
+    description:
+      'Notes and practice code on agentic AI, RAG and LangChain, written so a beginner can follow end to end.',
+    tech: ['Python', 'LangChain', 'RAG'],
+    links: [
+      {
+        label: 'GitHub',
+        href: 'https://github.com/prachyabiswas',
+        icon: 'github',
+      },
+    ],
   },
   {
-    id: 'p5',
-    type: 'Research',
-    title: 'Computer vision experiment placeholder',
-    description: 'Describe the dataset, architecture and evaluation protocol. Replace with a verified project from your portfolio.',
-    tech: ['PyTorch', 'OpenCV', 'MATLAB'],
-    metrics: [{ label: 'mAP', value: '0.00', placeholder: true }],
-    links: [{ label: 'Repository', href: 'https://github.com/' }],
+    id: 'ml-algorithms-from-scratch',
+    title: 'Machine learning algorithms from scratch',
+    description:
+      'Linear and logistic regression, KNN, SVM and a neural network written in NumPy.',
+    tech: ['Python', 'NumPy'],
+    links: [],
   },
   {
-    id: 'p6',
-    type: 'AI Product',
-    title: 'NLP application placeholder',
-    description: 'Describe the language task, the model choices and how the result was evaluated with real users or data.',
-    tech: ['Hugging Face', 'Python', 'Streamlit'],
-    links: [{ label: 'Demo', href: 'https://example.com/demo' }],
+    id: 'computational-biology-meets-cells',
+    title: 'Computational Biology Meets Cells',
+    description:
+      'Module-by-module notes from self-study of bioinformatics and computational biology course material.',
+    tech: ['Bioinformatics', 'Python'],
+    links: [
+      {
+        label: 'GitHub',
+        href: 'https://github.com/prachyabiswas',
+        icon: 'github',
+      },
+    ],
   },
 ];
 
 export const leadership: LeadershipItem[] = [
-  { id: 'l1', category: 'Leadership', title: 'Team lead placeholder', organization: 'Student or professional organization', start: '2025', end: 'present', description: 'Describe the team size, your responsibilities and a concrete outcome.', icon: 'users', href: 'https://example.com/l1' },
-  { id: 'l2', category: 'Teaching and Mentorship', title: 'ML mentor placeholder', organization: 'Community program', start: '2024', end: '2025', description: 'Describe who you mentored, the format and what the mentees achieved.', icon: 'lightbulb', href: 'https://example.com/l2' },
-  { id: 'l3', category: 'Community', title: 'Study group organizer placeholder', organization: 'Local ML community', start: '2023', end: '2024', description: 'Describe the sessions you organized and the number of participants.', icon: 'globe', href: 'https://example.com/l3' },
-  { id: 'l4', category: 'Volunteering', title: 'Workshop volunteer placeholder', organization: 'Non-profit or university', start: '2023', end: '2023', description: 'Describe the workshop, your role and the impact.', icon: 'heart', href: 'https://example.com/l4' },
+  {
+    id: 'math-olympiad-academic-team',
+    title: 'Math olympiad academic team',
+    description:
+      'Academic team member at the Bangladesh Mathematical Olympiad.',
+    icon: 'users',
+  },
+  {
+    id: 'teaching-olympiad-students',
+    title: 'Teaching olympiad students',
+    description:
+      'Prep classes for Prothom Alo Math Olympiad students, from primary to advanced level. The first class was a two-hour lecture on the Pigeonhole Principle.',
+    icon: 'lightbulb',
+  },
+  {
+    id: 'study-materials',
+    title: 'Study materials',
+    description:
+      'Worksheets and exam guides for Cambridge O Level Mathematics students.',
+    icon: 'book',
+  },
+  {
+    id: 'seminars-and-workshops',
+    title: 'Seminars and workshops',
+    description:
+      'Sessions at CUET and Chittagong University (details under Talks and Features).',
+    icon: 'mic',
+  },
+  {
+    id: 'student-communities',
+    title: 'Student communities',
+    description:
+      'Secretariat at IEEE BRAC University Student Branch, Sub-Executive of HR at BUEDF, General Member in R&D at BUCC.',
+    icon: 'globe',
+  },
 ];
 
-export const talks: Talk[] = [
-  { id: 't1', type: 'Talk', venue: 'Conference placeholder', title: 'Practical model evaluation', description: 'A short line about the talk topic and audience.', date: '2026', href: 'https://example.com/t1' },
-  { id: 't2', type: 'Workshop', venue: 'University placeholder', title: 'Intro to PyTorch', description: 'A short line about the workshop format and participants.', date: '2025', href: 'https://example.com/t2' },
-  { id: 't3', type: 'Feature', venue: 'Publication placeholder', title: 'Building ML products', description: 'A short line about the interview or feature.', date: '2025', href: 'https://example.com/t3' },
-  { id: 't4', type: 'Video', venue: 'YouTube placeholder', title: 'Competition walkthrough', description: 'A short line about the video and what it covers.', date: '2024', href: 'https://example.com/t4' },
-  { id: 't5', type: 'Talk', venue: 'Meetup placeholder', title: 'From notebook to API', description: 'A short line about the talk topic and audience.', date: '2024', href: 'https://example.com/t5' },
-  { id: 't6', type: 'Feature', venue: 'Community site placeholder', title: 'Open-source spotlight', description: 'A short line about the feature and the project.', date: '2023', href: 'https://example.com/t6' },
+/** Five seminars are listed in the doc; the main page shows the latest three. */
+export const seminars: Seminar[] = [
+  {
+    id: 'machine-learning-2026-ai-seminar',
+    title: 'Machine Learning 2026: Artificial Intelligence seminar',
+    host: 'IEEE CUET Student Branch',
+    date: '[date]',
+    topic: '[topic]',
+    description: '[description from Prachya]',
+    photos: ['/images/writing-placeholder.svg'],
+    links: [{ label: 'Event post' }],
+  },
+  {
+    id: 'seminar-placeholder-2',
+    title: '[event name]',
+    host: '[host: CUET, CU or IIUC]',
+    date: '[date]',
+    topic: '[topic]',
+    description: '[description from Prachya]',
+    photos: ['/images/writing-placeholder.svg'],
+    links: [{ label: 'Video' }],
+  },
+  {
+    id: 'seminar-placeholder-3',
+    title: '[event name]',
+    host: '[host]',
+    date: '[date]',
+    topic: '[topic]',
+    description: '[description from Prachya]',
+    photos: ['/images/writing-placeholder.svg'],
+    links: [{ label: 'Facebook post' }],
+  },
+  {
+    id: 'seminar-placeholder-4',
+    title: '[event name]',
+    host: '[host]',
+    date: '[date]',
+    topic: '[topic]',
+    description: '[description from Prachya]',
+    photos: ['/images/writing-placeholder.svg'],
+    links: [{ label: 'Facebook post' }],
+  },
+  {
+    id: 'seminar-placeholder-5',
+    title: '[event name]',
+    host: '[host]',
+    date: '[date]',
+    topic: '[topic]',
+    description: '[description from Prachya]',
+    photos: ['/images/writing-placeholder.svg'],
+    links: [{ label: 'Facebook post' }],
+  },
+];
+
+export const books: Book[] = [
+  {
+    id: 'book-placeholder',
+    cover: '/images/writing-placeholder.svg',
+    title: '[book title]',
+    author: '[author]',
+    topic: '[ML, AI or Mathematics]',
+    status: '[Reading or Finished]',
+  },
 ];
 
 export const socialLinks: SocialLink[] = [
-  { label: 'GitHub', href: 'https://github.com/prachyabiswas', icon: 'github' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/', icon: 'linkedin' },
-  { label: 'Kaggle', href: 'https://www.kaggle.com/', icon: 'kaggle' },
-  { label: 'Email', href: 'mailto:hello@example.com', icon: 'mail' },
-  { label: 'Facebook', href: 'https://www.facebook.com/', icon: 'facebook' },
-  { label: 'Instagram', href: 'https://www.instagram.com/', icon: 'instagram' },
+  {
+    label: 'GitHub',
+    href: 'https://github.com/prachyabiswas',
+    icon: 'github',
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://linkedin.com/in/prachya-biswas-06715932a',
+    icon: 'linkedin',
+  },
+  {
+    label: 'Email',
+    href: 'mailto:[email]',
+    icon: 'mail',
+  },
 ];
 
-/** Structural UI labels live here too, so the navbar needs no code edits to relabel. */
+/** Navbar order follows the content doc. Writing is filtered by the navbar. */
 export const navigation: Navigation = {
   primary: [
-    { label: 'Home', target: 'home', icon: 'home' },
-    { label: 'Experience', target: 'experience', icon: 'briefcase' },
-    { label: 'Achievements', target: 'achievements', icon: 'trophy' },
-    { label: 'Skills', target: 'skills', icon: 'brain' },
-    { label: 'Projects', target: 'projects', icon: 'folder' },
+    { label: 'Home', href: '/#home', icon: 'home' },
+    { label: 'Experience', href: '/#experience', icon: 'briefcase' },
+    { label: 'Achievements', href: '/#achievements', icon: 'trophy' },
+    { label: 'Skills', href: '/#skills', icon: 'brain' },
+    { label: 'Projects', href: '/#projects', icon: 'folder' },
   ],
   more: [
-    { label: 'About', target: 'about', icon: 'book' },
-    { label: 'Leadership and Mentorship', target: 'leadership', icon: 'users' },
-    { label: 'Writing', target: 'writing', icon: 'pen' },
-    { label: 'Talks and Features', target: 'talks', icon: 'mic' },
-    { label: 'Contact', target: 'contact', icon: 'mail' },
+    {
+      label: 'Leadership & Mentorship',
+      href: '/#leadership',
+      icon: 'users',
+    },
+    {
+      label: 'Writing',
+      href: '/#writing',
+      icon: 'pen',
+      activeOn: ['/writing'],
+    },
+    {
+      label: 'Notes and Books',
+      href: '/notes',
+      icon: 'book',
+      activeOn: ['/notes'],
+    },
+    {
+      label: 'Talks and Features',
+      href: '/#talks',
+      icon: 'mic',
+      activeOn: ['/talks'],
+    },
+    {
+      label: 'Blog',
+      href: '/blog',
+      icon: 'globe',
+      activeOn: ['/blog'],
+      activeSection: 'blog',
+    },
+    { label: 'Contact', href: '/#contact', icon: 'mail' },
   ],
-  writingHref: '/writing',
 };
 
 export const copy: SiteCopy = {
   sectionTitles: {
-    biography: 'Biography',
     experience: 'Experience',
     achievements: 'Achievements',
     skills: 'Skills',
     projects: 'Projects',
     leadership: 'Leadership and Mentorship',
     writing: 'Writing',
+    notes: 'Notes and Books',
     talks: 'Talks and Features',
-    contact: 'Get in Touch',
+    blog: 'Blog',
+    contact: 'Contact Me',
   },
   labels: {
-    atAGlance: 'At a Glance',
-    education: 'Education',
-    experience: 'Experience',
-    profiles: 'Profiles',
-    viewProjects: 'View Projects',
-    readBiography: 'Read biography',
+    viewProjects: 'See What I Build',
+    contactMe: 'Contact Me',
     more: 'More',
     readMore: 'Read more',
-    showLess: 'Show less',
-    moreAchievements: 'More achievements',
     moreProjects: 'More Projects on GitHub',
-    duration: 'Duration',
-    location: 'Location',
+  },
+  achievements: {
+    awardsTitle: 'Awards and recognition',
+    competitionsTitle: 'Competitions entered',
+    achievement: 'Achievement',
+    year: 'Year',
+    detail: 'Detail',
   },
   form: {
     name: 'Name',
     email: 'Email',
-    subject: 'Subject',
-    subjectOptional: '(optional)',
     message: 'Message',
-    send: 'Send message',
+    send: 'Send Message',
     sending: 'Sending...',
     namePlaceholder: 'Your name',
     emailPlaceholder: 'you@example.com',
-    subjectPlaceholder: 'What is this about?',
     messagePlaceholder: 'Tell me a little about your idea, role or question...',
     nameError: 'Please enter a name between 2 and 80 characters.',
     emailError: 'Please enter a valid email address.',
-    subjectError: 'Subject must be 150 characters or fewer.',
     messageError: 'Message must be between 10 and 2000 characters.',
     invalidForm: 'Please fix the highlighted fields and try again.',
-    serverError: 'Something went wrong. Please try again later.',
-    networkError: 'Network error. Please check your connection and try again.',
-    success: 'Thanks! Your message was sent successfully.',
+    serverError:
+      'Something went wrong. Please email me directly at [email].',
+    networkError:
+      'Something went wrong. Please email me directly at [email].',
+    success: 'Thanks, your message is sent. I will reply soon.',
     honeypot: 'Company',
   },
   footer: {
-    rights: 'All rights reserved.',
+    line: '© 2026 Prachya Biswas. Dhaka, Bangladesh.',
   },
   writing: {
-    subtitle: 'Notes on machine learning, experiments and the things I learn along the way.',
+    subtitle:
+      'Notes on machine learning, experiments and the things I learn along the way.',
     featuredLabel: 'Featured essay',
+    sampleLabel: 'Sample article',
     readEssay: 'Read the essay',
     moreFromJournal: 'More from the journal',
     articleSingular: 'article',
@@ -705,6 +817,7 @@ export const copy: SiteCopy = {
     searchPlaceholder: 'Search articles...',
     allTags: 'All',
     noArticles: 'No articles match your filters.',
+    moreComing: 'More essays are on the way.',
     minuteRead: 'min read',
     share: 'Share this article',
     copyLink: 'Copy link',
@@ -717,16 +830,54 @@ export const copy: SiteCopy = {
     published: 'Published',
     tableOfContents: 'On this page',
   },
+  notes: {
+    subtitle:
+      'Machine learning, AI and mathematics notes from my own study, plus the books I am reading.',
+    notesTitle: 'Notes',
+    allGroups: 'All',
+    noNotes: 'No notes in this group yet.',
+    backToNotes: 'Back to Notes',
+    viewRepo: 'View repo',
+    sampleLabel: 'Sample note',
+    booksTitle: 'Books',
+    booksSubtitle:
+      'A reading list of machine learning, AI and mathematics books.',
+    booksEmpty: 'The reading list is coming soon.',
+  },
+  talks: {
+    intro:
+      'I have also conducted seminars and workshops at CUET, CU and IIUC.',
+    viewAll: 'View all seminars',
+    eventPost: 'Event post',
+    video: 'Video',
+    facebookPost: 'Facebook post',
+    photos: 'Photos',
+    noTalks: 'Seminar details are coming soon.',
+  },
+  blog: {
+    subtitle:
+      'Photos and moments from university, olympiads, competitions and teaching.',
+    allCategories: 'All',
+    noPosts: 'No posts in this category yet.',
+    backToBlog: 'Back to Blog',
+    viewAllPosts: 'View all posts',
+    sampleLabel: 'Sample post',
+    photos: 'Photos',
+  },
   a11y: {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     scrollToTop: 'Scroll to top',
     switchToLight: 'Switch to light mode',
     switchToDark: 'Switch to dark mode',
-    backToTop: 'back to top',
     placeholderValue: 'Placeholder value',
     filterByTag: 'Filter by tag',
+    filterByGroup: 'Filter notes by group',
+    filterByCategory: 'Filter posts by category',
     articleNavigation: 'Article navigation',
+    noteNavigation: 'Note navigation',
+    blogNavigation: 'Blog navigation',
+    talkNavigation: 'Seminar navigation',
   },
 };
 

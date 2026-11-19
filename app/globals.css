@@ -121,7 +121,7 @@ html.light {
   }
 
   .section-block {
-    @apply scroll-mt-24 py-16 md:py-24;
+    @apply py-16 md:py-24;
   }
 
   .section-title {

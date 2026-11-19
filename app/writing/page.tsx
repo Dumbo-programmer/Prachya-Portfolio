@@ -23,6 +23,7 @@ export default function WritingPage() {
   return (
     <div className="container-page pb-20 pt-32 md:pt-40">
       <SectionHeading
+        as="h1"
         title={copy.sectionTitles.writing}
         subtitle={copy.writing.subtitle}
       />

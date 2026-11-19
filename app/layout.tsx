@@ -12,6 +12,7 @@ import {
 } from '@/components/theme/theme-provider';
 import { profile, socialLinks } from '@/data/content';
 import { siteDescription, siteName, siteUrl } from '@/lib/site';
+import { getArticleSummaries } from '@/lib/writing';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,7 +30,7 @@ const bengali = Noto_Sans_Bengali({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${siteName} | ${profile.title}`,
+    default: siteName,
     template: `%s | ${siteName}`,
   },
   description: siteDescription,
@@ -43,20 +44,20 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: siteUrl,
     siteName,
-    title: `${siteName} | ${profile.title}`,
+    title: siteName,
     description: siteDescription,
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: `${siteName} — ML and AI Engineer`,
+        alt: `${siteName} — ${profile.title}`,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${siteName} | ${profile.title}`,
+    title: siteName,
     description: siteDescription,
     images: ['/opengraph-image'],
   },
@@ -113,7 +114,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <ThemeProvider>
           <DarkBackground />
-          <Navbar />
+          <Navbar showWriting={getArticleSummaries().length > 1} />
           <main className="relative z-10">{children}</main>
           <Footer />
           <FloatingControls />

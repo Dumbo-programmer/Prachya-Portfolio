@@ -102,6 +102,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         <header className="mt-8 max-w-3xl">
           <ul className="flex flex-wrap gap-2">
+            {article.sample ? (
+              <li className="chip">{copy.writing.sampleLabel}</li>
+            ) : null}
             {article.tags.map((tag) => (
               <li key={tag} className="chip">
                 #{tag}

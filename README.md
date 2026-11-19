@@ -2,7 +2,7 @@
 
 Personal portfolio for Prachya Biswas, ML and AI Engineer. Built with Next.js App Router, TypeScript, Tailwind CSS, MDX and Resend, deployed on Vercel.
 
-The home page presents its sections as tab panels: navbar links switch the visible section instantly and update a shareable `?tab=` URL instead of scrolling. The MDX writing archive (`/writing`) and individual article pages (`/writing/[slug]`) remain separate routes. It has a dark default theme with a decorative coding atmosphere, plus a clean light theme.
+The home page is a single scrolling page: navbar links move between sections. Writing, Notes and Books, Talks and Features, and Blog have their own archive pages, with individual article, note and post pages. It has a dark default theme with a decorative coding atmosphere, plus a clean light theme.
 
 ## Quick start
 
@@ -30,22 +30,29 @@ app/
   api/contact/              Resend-backed contact endpoint
   writing/                  /writing archive and /writing/[slug] article pages
   writing/[slug]/opengraph-image.tsx
+  notes/                    /notes page and /notes/[slug] note pages
+  talks/                    /talks seminar archive
+  blog/                     /blog archive and /blog/[slug] post pages
   rss.xml/route.ts          generated RSS feed
   globals.css               theme tokens, base styles, article/code typography
   layout.tsx                fonts, theme bootstrap, navbar, footer, Person JSON-LD
-  page.tsx                  home page tab panels
+  page.tsx                  single-page home sections
   opengraph-image.tsx       generated home social image
   sitemap.ts, robots.ts
 components/
-  tabs/                     tab panel wrapper and in-page tab links
   writing/                  home writing section, archive filters, share buttons
+  notes/                    notes archive filters
+  blog/                     home blog section and archive filters
   ...                       navbar, hero, sections, contact, theme, background
 content/writing/            MDX articles (new files publish automatically)
+content/notes/              MDX study notes
+content/blog/               MDX photo-led blog posts
 data/content.ts             ALL editable site content, types and UI copy
 lib/
-  writing.ts                reads/sorts MDX front matter, reading time, dates
+  writing.ts                reads/sorts writing MDX front matter
+  notes.ts                  reads/sorts note MDX front matter
+  blog.ts                   reads/sorts blog MDX front matter
   mdx.ts                    shared remark/rehype pipeline
-  tabs.ts                   tab ids, deep links and switch helper
   format.ts, site.ts, og-image.tsx
 public/images/, public/logos/
 ```
@@ -85,7 +92,9 @@ coverImage: "/images/writing-placeholder.svg"  # optional
 
 4. Save. `lib/writing.ts` picks up the file automatically. It appears on the home Writing section, in the archive (newest first), in `/sitemap.xml`, in `/rss.xml`, and gets a static page with generated metadata, JSON-LD and an Open Graph image. No component code changes are needed.
 
-Set `featured: true` on exactly one article for the large home-page card; if none is featured, the newest article is used. Set `language: "bn"` for Bengali — the article element gets `lang="bn"` and the Noto Sans Bengali font.
+Set `featured: true` on exactly one article for the large home-page card; if none is featured, the newest article is used. Set `language: "bn"` for Bengali — the article element gets `lang="bn"` and the Noto Sans Bengali font. Set `sample: true` to show the "Sample article" label. The Writing nav item stays hidden while only one article exists and appears automatically when a second one is added.
+
+Notes live in `content/notes/` (`group` is `Machine Learning`, `AI` or `Mathematics`) and blog posts live in `content/blog/` (`category` is `University`, `Olympiad`, `Competitions`, `Teaching` or `Other`). Both use the same MDX pipeline.
 
 ## Theme
 
@@ -129,11 +138,11 @@ The contact form validates in the browser and again on the server, includes a ho
 - Unique descriptions, canonical URLs, Open Graph/Twitter cards and generated OG images for the home page and every article.
 - `Person` JSON-LD on the site and `Article` JSON-LD on each article.
 - `app/sitemap.ts` includes the home page, `/writing` and all articles. `robots.txt` points to the sitemap. `/rss.xml` lists all articles.
-- All content is server-rendered; client components only handle tab switching, the theme toggle, menus, form, scroll reveal, archive filters and share buttons. Every tab panel is present in the HTML and deep links such as `/?tab=projects` render the correct panel on the server.
+- All content is server-rendered; client components only handle the theme toggle, menus, form, scroll reveal, archive filters and share buttons. Home sections are plain anchors, so deep links such as `/#projects` land on the right section without JavaScript.
 
 ## Replacement checklist before publishing
 
-- [ ] Replace `public/images/photo-placeholder.svg` with a real portrait and update `profile.photo` / `profile.photoAlt`.
+- [ ] Replace `public/images/prachya_light.jpg` and `prachya_dark.jpg` with final portraits and update `profile.photoLight` / `profile.photoDark`.
 - [ ] Replace `public/logos/placeholder.svg` with real organization logos and update `experience[].logo`.
 - [ ] Replace `profile.email`, the LinkedIn/Kaggle/social URLs and the biography/`introSegments` placeholder links. GitHub already points to `github.com/prachyabiswas`.
 - [ ] Replace all placeholder stats and project metrics with verified numbers (remove `placeholder: true`).

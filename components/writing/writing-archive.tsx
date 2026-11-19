@@ -106,6 +106,9 @@ export function WritingArchive({
                       {copy.writing.featuredLabel}
                     </span>
                   ) : null}
+                  {article.sample ? (
+                    <span className="chip">{copy.writing.sampleLabel}</span>
+                  ) : null}
                 </div>
 
                 <h2 className="mt-4 text-lg font-semibold leading-snug text-foreground">

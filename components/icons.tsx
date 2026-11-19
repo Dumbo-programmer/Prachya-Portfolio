@@ -33,9 +33,16 @@ import {
 } from 'lucide-react';
 import {
   SiFacebook,
+  SiGit,
   SiGithub,
+  SiGooglecolab,
   SiInstagram,
   SiKaggle,
+  SiLangchain,
+  SiNumpy,
+  SiPython,
+  SiPytorch,
+  SiTensorflow,
   SiX,
 } from 'react-icons/si';
 import type { IconName } from '@/data/content';
@@ -80,6 +87,13 @@ const brandIcons: Partial<Record<IconName, IconComponent>> = {
   facebook: SiFacebook as unknown as IconComponent,
   instagram: SiInstagram as unknown as IconComponent,
   x: SiX as unknown as IconComponent,
+  python: SiPython as unknown as IconComponent,
+  pytorch: SiPytorch as unknown as IconComponent,
+  tensorflow: SiTensorflow as unknown as IconComponent,
+  numpy: SiNumpy as unknown as IconComponent,
+  git: SiGit as unknown as IconComponent,
+  googlecolab: SiGooglecolab as unknown as IconComponent,
+  langchain: SiLangchain as unknown as IconComponent,
 };
 
 export function Icon({

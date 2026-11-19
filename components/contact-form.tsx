@@ -7,7 +7,6 @@ import { copy } from '@/data/content';
 interface FormValues {
   name: string;
   email: string;
-  subject: string;
   message: string;
   company: string; // honeypot — must stay empty
 }
@@ -17,7 +16,6 @@ type FieldErrors = Partial<Record<keyof FormValues, string>>;
 const initialValues: FormValues = {
   name: '',
   email: '',
-  subject: '',
   message: '',
   company: '',
 };
@@ -30,9 +28,6 @@ function validate(values: FormValues): FieldErrors {
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
     errors.email = copy.form.emailError;
-  }
-  if (values.subject.trim().length > 150) {
-    errors.subject = copy.form.subjectError;
   }
   if (values.message.trim().length < 10 || values.message.trim().length > 2000) {
     errors.message = copy.form.messageError;
@@ -82,9 +77,7 @@ export function ContactForm() {
       if (!response.ok || !result.ok) {
         if (result.fields) setErrors(result.fields);
         setState('error');
-        setFeedback(
-          result.error ?? copy.form.serverError,
-        );
+        setFeedback(result.error ?? copy.form.serverError);
         return;
       }
 
@@ -163,28 +156,6 @@ export function ContactForm() {
             </p>
           ) : null}
         </div>
-      </div>
-
-      <div>
-        <label htmlFor="contact-subject" className="field-label">
-          {copy.form.subject}{' '}
-          <span className="text-faint">{copy.form.subjectOptional}</span>
-        </label>
-        <input
-          id="contact-subject"
-          name="subject"
-          className="field-input"
-          placeholder={copy.form.subjectPlaceholder}
-          value={values.subject}
-          onChange={onChange('subject')}
-          aria-invalid={Boolean(errors.subject)}
-          aria-describedby={errors.subject ? 'error-subject' : undefined}
-        />
-        {errors.subject ? (
-          <p id="error-subject" className="mt-1.5 text-xs text-accent-2">
-            {errors.subject}
-          </p>
-        ) : null}
       </div>
 
       <div>

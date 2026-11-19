@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { copy } from '@/data/content';
 
 /**
  * Contact endpoint: server-side validation, honeypot, simple in-memory rate
@@ -54,12 +55,11 @@ function escapeHtml(value: string): string {
 interface FieldErrors {
   name?: string;
   email?: string;
-  subject?: string;
   message?: string;
 }
 
 function validate(input: Record<string, unknown>): {
-  values: { name: string; email: string; subject: string; message: string };
+  values: { name: string; email: string; message: string };
   errors: FieldErrors;
 } {
   const text = (key: string) =>
@@ -68,25 +68,21 @@ function validate(input: Record<string, unknown>): {
   const values = {
     name: text('name'),
     email: text('email'),
-    subject: text('subject'),
     message: text('message'),
   };
 
   const errors: FieldErrors = {};
   if (values.name.length < 2 || values.name.length > 80) {
-    errors.name = 'Name must be between 2 and 80 characters.';
+    errors.name = copy.form.nameError;
   }
   if (
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email) ||
     values.email.length > 254
   ) {
-    errors.email = 'Please provide a valid email address.';
-  }
-  if (values.subject.length > 150) {
-    errors.subject = 'Subject must be 150 characters or fewer.';
+    errors.email = copy.form.emailError;
   }
   if (values.message.length < 10 || values.message.length > 2000) {
-    errors.message = 'Message must be between 10 and 2000 characters.';
+    errors.message = copy.form.messageError;
   }
 
   return { values, errors };
@@ -97,15 +93,17 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, error: 'Invalid request body.' }, {
-      status: 400,
-    });
+    return NextResponse.json(
+      { ok: false, error: copy.form.serverError },
+      { status: 400 },
+    );
   }
 
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    return NextResponse.json({ ok: false, error: 'Invalid request body.' }, {
-      status: 400,
-    });
+    return NextResponse.json(
+      { ok: false, error: copy.form.serverError },
+      { status: 400 },
+    );
   }
 
   const input = body as Record<string, unknown>;
@@ -119,7 +117,7 @@ export async function POST(request: Request) {
   const { values, errors } = validate(input);
   if (Object.keys(errors).length > 0) {
     return NextResponse.json(
-      { ok: false, error: 'Please check the highlighted fields.', fields: errors },
+      { ok: false, error: copy.form.invalidForm, fields: errors },
       { status: 400 },
     );
   }
@@ -132,7 +130,7 @@ export async function POST(request: Request) {
 
   if (isRateLimited(clientIp)) {
     return NextResponse.json(
-      { ok: false, error: 'Too many messages. Please try again in a minute.' },
+      { ok: false, error: copy.form.serverError },
       { status: 429 },
     );
   }
@@ -144,7 +142,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        error: 'Contact email is not configured yet. Please email the address listed on this page.',
+        error: copy.form.serverError,
       },
       { status: 503 },
     );
@@ -152,19 +150,15 @@ export async function POST(request: Request) {
 
   try {
     const resend = new Resend(apiKey);
-    const subject = values.subject
-      ? `[Portfolio] ${values.subject}`
-      : `[Portfolio] Message from ${values.name}`;
 
     const { error } = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>',
       to: contactEmail,
       replyTo: values.email,
-      subject,
+      subject: `[Portfolio] Message from ${values.name}`,
       text: [
         `Name: ${values.name}`,
         `Email: ${values.email}`,
-        `Subject: ${values.subject || '(none)'}`,
         '',
         values.message,
       ].join('\n'),
@@ -172,7 +166,6 @@ export async function POST(request: Request) {
         <h2>New portfolio message</h2>
         <p><strong>Name:</strong> ${escapeHtml(values.name)}</p>
         <p><strong>Email:</strong> ${escapeHtml(values.email)}</p>
-        <p><strong>Subject:</strong> ${escapeHtml(values.subject || '(none)')}</p>
         <hr />
         <p>${escapeHtml(values.message).replace(/\n/g, '<br />')}</p>
       `,
@@ -181,7 +174,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error('Resend error:', error);
       return NextResponse.json(
-        { ok: false, error: 'Your message could not be sent. Please try again.' },
+        { ok: false, error: copy.form.serverError },
         { status: 502 },
       );
     }
@@ -190,7 +183,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Contact route error:', error);
     return NextResponse.json(
-      { ok: false, error: 'Your message could not be sent. Please try again.' },
+      { ok: false, error: copy.form.serverError },
       { status: 500 },
     );
   }

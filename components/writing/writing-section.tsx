@@ -50,9 +50,14 @@ export function WritingSection() {
               <article className="card relative flex h-full flex-col overflow-hidden p-6 sm:p-8">
                 <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-accent-gradient opacity-10 blur-3xl" />
                 <div className="relative flex flex-1 flex-col">
-                  <span className="chip w-fit border-accent/30 bg-accent/10 text-accent">
-                    {copy.writing.featuredLabel}
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="chip w-fit border-accent/30 bg-accent/10 text-accent">
+                      {copy.writing.featuredLabel}
+                    </span>
+                    {featured.sample ? (
+                      <span className="chip w-fit">{copy.writing.sampleLabel}</span>
+                    ) : null}
+                  </div>
                   <h3 className="mt-5 text-2xl font-bold leading-snug text-foreground">
                     {featured.title}
                   </h3>
@@ -92,32 +97,38 @@ export function WritingSection() {
               </p>
               <div className="section-divider !mt-4" />
 
-              <ul className="mt-2 divide-y divide-line">
-                {latest.map((article) => (
-                  <li key={article.slug}>
-                    <Link
-                      href={`/writing/${article.slug}`}
-                      className="group flex items-start justify-between gap-4 py-4"
-                    >
-                      <span className="min-w-0">
-                        <span className="block text-sm font-semibold leading-snug text-foreground transition group-hover:text-accent">
-                          {article.title}
+              {latest.length > 0 ? (
+                <ul className="mt-2 divide-y divide-line">
+                  {latest.map((article) => (
+                    <li key={article.slug}>
+                      <Link
+                        href={`/writing/${article.slug}`}
+                        className="group flex items-start justify-between gap-4 py-4"
+                      >
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold leading-snug text-foreground transition group-hover:text-accent">
+                            {article.title}
+                          </span>
+                          <span className="mt-1 line-clamp-2 block text-xs leading-5 text-muted">
+                            {article.excerpt}
+                          </span>
+                          <span className="mt-1.5 block text-[11px] text-faint">
+                            {formatArticleDate(article.date, article.language)} ·{' '}
+                            {article.readingTime} {copy.writing.minuteRead}
+                          </span>
                         </span>
-                        <span className="mt-1 line-clamp-2 block text-xs leading-5 text-muted">
-                          {article.excerpt}
+                        <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-muted transition group-hover:border-accent group-hover:text-accent">
+                          <ArrowRight size={14} aria-hidden="true" />
                         </span>
-                        <span className="mt-1.5 block text-[11px] text-faint">
-                          {formatArticleDate(article.date, article.language)} ·{' '}
-                          {article.readingTime} {copy.writing.minuteRead}
-                        </span>
-                      </span>
-                      <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-muted transition group-hover:border-accent group-hover:text-accent">
-                        <ArrowRight size={14} aria-hidden="true" />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-4 text-sm leading-6 text-muted">
+                  {copy.writing.moreComing}
+                </p>
+              )}
 
               <div className="mt-2 border-t border-line pt-4">
                 <Link

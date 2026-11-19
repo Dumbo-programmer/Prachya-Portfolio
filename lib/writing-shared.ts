@@ -9,6 +9,7 @@ export interface Article {
   excerpt: string;
   tags: string[];
   featured: boolean;
+  sample: boolean;
   language: ArticleLanguage;
   coverImage?: string;
   content: string;
