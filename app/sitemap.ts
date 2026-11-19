@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { seminars } from '@/data/content';
 import { getAllBlogPosts } from '@/lib/blog';
 import { getAllNotes } from '@/lib/notes';
 import { siteUrl } from '@/lib/site';
@@ -22,6 +23,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogUrls = getAllBlogPosts().map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
     lastModified: new Date(`${post.date}T00:00:00Z`),
+    changeFrequency: 'yearly' as const,
+    priority: 0.6,
+  }));
+
+  const talkUrls = seminars.map((seminar) => ({
+    url: `${siteUrl}/talks/${seminar.slug}`,
+    lastModified: new Date(),
     changeFrequency: 'yearly' as const,
     priority: 0.6,
   }));
@@ -53,6 +61,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
+    ...talkUrls,
     {
       url: `${siteUrl}/blog`,
       lastModified: new Date(),

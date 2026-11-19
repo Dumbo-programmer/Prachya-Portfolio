@@ -3,7 +3,10 @@ import { Icon } from './icons';
 
 export function Footer() {
   const links = socialLinks.filter(
-    (link) => link.label === 'GitHub' || link.label === 'LinkedIn',
+    (link) =>
+      link.label === 'GitHub' ||
+      link.label === 'LinkedIn' ||
+      link.label === 'Facebook',
   );
 
   return (

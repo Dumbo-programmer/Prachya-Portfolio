@@ -1,13 +1,14 @@
 import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { copy, seminars } from '@/data/content';
+import { copy, features, seminars } from '@/data/content';
 import { Icon } from './icons';
 import { Reveal } from './reveal';
 import { SectionHeading } from './section-heading';
+import { TalkCard } from './talk-card';
 
 export function TalksSection() {
   const latest = seminars.slice(0, 3);
+  const visibleFeatures = features.filter((feature) => feature.href.trim());
 
   return (
     <section id="talks" aria-labelledby="talks-heading" className="section-block">
@@ -20,34 +21,44 @@ export function TalksSection() {
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {latest.map((seminar, index) => (
-            <Reveal key={seminar.id} delay={index * 50}>
-              <article className="card flex h-full flex-col overflow-hidden">
-                <div className="relative aspect-[16/9] border-b border-line bg-surface-raised">
-                  <Image
-                    src={seminar.photos[0] ?? '/images/writing-placeholder.svg'}
-                    alt={`${seminar.title} photo`}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-
-                <div className="flex flex-1 flex-col p-6">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted">
-                    {seminar.host}
-                  </p>
-                  <h3 className="mt-2 text-base font-semibold leading-snug text-foreground">
-                    {seminar.title}
-                  </h3>
-                  <p className="mt-2 flex items-center gap-2 text-xs text-faint">
-                    <Icon name="calendar" className="h-3.5 w-3.5" />
-                    {seminar.date}
-                  </p>
-                </div>
-              </article>
+            <Reveal key={seminar.slug} delay={index * 50}>
+              <TalkCard seminar={seminar} />
             </Reveal>
           ))}
         </div>
+
+        {visibleFeatures.length ? (
+          <div className="mt-10">
+            <h3 className="text-lg font-semibold text-foreground">
+              {copy.talks.featuresTitle}
+            </h3>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {visibleFeatures.map((feature) => (
+                <li key={feature.source}>
+                  <a
+                    href={feature.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="card flex items-start gap-3 p-4 transition hover:border-accent"
+                  >
+                    <Icon
+                      name="externalLink"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-accent"
+                    />
+                    <span>
+                      <span className="block font-semibold text-foreground">
+                        {feature.source}
+                      </span>
+                      <span className="mt-1 block text-sm text-muted">
+                        {feature.line}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         <div className="mt-8 text-center">
           <Link href="/talks" className="btn-secondary">

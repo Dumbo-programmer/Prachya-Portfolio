@@ -1,69 +1,48 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { achievements, copy, type AchievementRow } from '@/data/content';
+import { CertificateLightbox } from './certificate-lightbox';
 import { Icon } from './icons';
 import { Reveal } from './reveal';
 import { SectionHeading } from './section-heading';
 
-function isFilled(value: string): boolean {
-  return value.trim().length > 0 && !value.trim().startsWith('[');
+function showYear(year: string): boolean {
+  return year.trim().length > 0 && !year.trim().startsWith('[');
 }
 
-function AchievementGroup({
-  title,
-  rows,
-}: {
-  title: string;
-  rows: AchievementRow[];
-}) {
-  const visible = rows.filter((row) => isFilled(row.year));
-  if (visible.length === 0) return null;
+function certificateExists(certificatePath?: string): boolean {
+  if (!certificatePath) return false;
+  return fs.existsSync(path.join(process.cwd(), 'public', certificatePath));
+}
+
+function AchievementCard({ row, index }: { row: AchievementRow; index: number }) {
+  const hasCertificate = certificateExists(row.certificatePath);
 
   return (
-    <div>
-      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-      <div className="section-divider !mt-3" />
-
-      <div className="mt-5 overflow-hidden rounded-card border border-line bg-surface shadow-card">
-        <div className="hidden grid-cols-[1.4fr_110px_1fr] gap-4 border-b border-line bg-surface-raised px-5 py-3 text-xs font-semibold uppercase tracking-wide text-faint sm:grid">
-          <span>{copy.achievements.achievement}</span>
-          <span>{copy.achievements.year}</span>
-          <span>{copy.achievements.detail}</span>
+    <Reveal delay={index * 50}>
+      <article className="card flex h-full flex-col p-6">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface-raised text-accent">
+          <Icon name={row.icon} className="h-5 w-5" />
         </div>
-
-        <ul className="divide-y divide-line">
-          {visible.map((row) => (
-            <li
-              key={row.id}
-              className="grid gap-2 px-5 py-4 sm:grid-cols-[1.4fr_110px_1fr] sm:items-center sm:gap-4"
-            >
-              <p className="flex items-start gap-2 font-medium text-foreground">
-                <Icon
-                  name="trophy"
-                  className="mt-0.5 h-4 w-4 shrink-0 text-accent"
-                />
-                {row.title}
-              </p>
-              <p className="text-sm text-accent">{row.year}</p>
-              <p className="text-sm leading-6 text-muted">{row.detail}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+        <h3 className="mt-4 text-base font-semibold leading-snug text-foreground">
+          {row.title}
+        </h3>
+        {showYear(row.year) ? (
+          <p className="mt-1 text-sm font-medium text-accent">{row.year}</p>
+        ) : null}
+        <p className="mt-3 flex-1 text-sm leading-6 text-muted">{row.detail}</p>
+        {hasCertificate && row.certificatePath ? (
+          <CertificateLightbox
+            src={row.certificatePath}
+            alt={row.certificateAlt ?? row.title}
+          />
+        ) : null}
+      </article>
+    </Reveal>
   );
 }
 
 export function AchievementsSection() {
-  const groups = [
-    {
-      title: copy.achievements.awardsTitle,
-      rows: achievements.awards,
-    },
-    {
-      title: copy.achievements.competitionsTitle,
-      rows: achievements.competitions,
-    },
-  ].filter((group) => group.rows.some((row) => isFilled(row.year)));
-
   return (
     <section
       id="achievements"
@@ -76,11 +55,21 @@ export function AchievementsSection() {
           title={copy.sectionTitles.achievements}
         />
 
-        <div className="space-y-10">
-          {groups.map((group, index) => (
-            <Reveal key={group.title} delay={index * 80}>
-              <AchievementGroup title={group.title} rows={group.rows} />
-            </Reveal>
+        <h3 className="mt-10 text-lg font-semibold text-foreground">
+          {copy.achievements.honorsTitle}
+        </h3>
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {achievements.honors.map((row, index) => (
+            <AchievementCard key={row.id} row={row} index={index} />
+          ))}
+        </div>
+
+        <h3 className="mt-14 text-lg font-semibold text-foreground">
+          {copy.achievements.competitionsTitle}
+        </h3>
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {achievements.competitions.map((row, index) => (
+            <AchievementCard key={row.id} row={row} index={index} />
           ))}
         </div>
       </div>

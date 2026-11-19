@@ -64,40 +64,42 @@ export interface Profile {
   shortName: string;
   title: string;
   tagline: string;
+  badgeText: string;
+  heroTagline: string;
+  heroHighlight: string;
   metaDescription: string;
   seoKeywords: string[];
   location: string;
   email: string;
   emailHref: string;
-  /** Theme-specific portraits; the hero shows one at a time. */
-  photoLight: string;
-  photoDark: string;
-  photoAlt: string;
-  photoCaption: string;
-  heroBadges: string[];
-  bio: string[];
   contactInvitation: string;
   footerTagline: string;
 }
 
 export interface ExperienceItem {
   organization: string;
+  organizationUrl?: string;
   logo?: string;
   role: string;
+  tag: string;
   period: string;
+  location: string;
   description: string;
   links?: LinkItem[];
 }
 
 export interface AchievementRow {
   id: string;
+  icon: IconName;
   title: string;
   year: string;
   detail: string;
+  certificatePath?: string;
+  certificateAlt?: string;
 }
 
 export interface Achievements {
-  awards: AchievementRow[];
+  honors: AchievementRow[];
   competitions: AchievementRow[];
 }
 
@@ -131,19 +133,27 @@ export interface LeadershipItem {
 
 export interface SeminarLink {
   label: string;
-  /** Missing links stay visible as disabled placeholders. */
+  /** Missing links are hidden until Prachya sends the URL. */
   href?: string;
 }
 
 export interface Seminar {
-  id: string;
+  slug: string;
   title: string;
   host: string;
   date: string;
   topic: string;
-  description: string;
+  summary: string;
+  details: string;
+  topics: string[];
   photos: string[];
   links: SeminarLink[];
+}
+
+export interface FeatureItem {
+  source: string;
+  href: string;
+  line: string;
 }
 
 export interface Book {
@@ -228,11 +238,13 @@ export interface SiteCopy {
     moreProjects: string;
   };
   achievements: {
-    awardsTitle: string;
+    honorsTitle: string;
     competitionsTitle: string;
     achievement: string;
     year: string;
     detail: string;
+    viewCertificate: string;
+    close: string;
   };
   form: {
     name: string;
@@ -301,6 +313,10 @@ export interface SiteCopy {
     facebookPost: string;
     photos: string;
     noTalks: string;
+    aboutSession: string;
+    topicsCovered: string;
+    backToTalks: string;
+    featuresTitle: string;
   };
   blog: {
     subtitle: string;
@@ -336,114 +352,161 @@ export const profile: Profile = {
   name: 'Prachya Biswas',
   shortName: 'PB',
   title: 'Computer Science student at BRAC University, Dhaka',
-  tagline: 'Machine Learning • Data Science • Mathematics • Teaching',
+  tagline: 'AI/ML • Data Science • Math Olympiad',
+  badgeText: 'AI/ML • Data Science • Math Olympiad',
+  heroTagline: 'Trying to learn what machines learn',
+  heroHighlight:
+    'Regional Champion at BdMO · Academic Team Member at Bangladesh Mathematical Olympiad',
   metaDescription:
     'Prachya Biswas is a Computer Science student at BRAC University, Dhaka, working on machine learning and data science and serving as an academic team member at the Bangladesh Mathematical Olympiad.',
   seoKeywords: [
     'Prachya Biswas',
-    'Machine Learning',
+    'AI/ML',
     'Data Science',
-    'Mathematics',
-    'Teaching',
+    'Math Olympiad',
     'BRAC University',
     'Portfolio',
   ],
   location: 'Dhaka, Bangladesh',
-  email: '[email]',
-  emailHref: 'mailto:[email]',
-  photoLight: '/images/prachya_light.jpg',
-  photoDark: '/images/prachya_dark.jpg',
-  photoAlt: 'Portrait of Prachya Biswas',
-  photoCaption: 'Prachya Biswas',
-  heroBadges: ['Machine Learning', 'Data Science', 'Mathematics', 'Teaching'],
-  bio: [
-    'Hello! I am a Computer Science student at BRAC University in Dhaka and Research Secretary at the ML & AI Research Lab, Bangladesh. I work as a data scientist on projects like MediSense BD, a national health forecasting platform, and Vangari AI, a waste classification project.',
-    'I am also an academic team member at the Bangladesh Mathematical Olympiad and teach mathematics to students through study materials, prep classes and seminars at CUET and Chittagong University.',
-  ],
+  email: 'prachya.biswas@g.bracu.ac.bd',
+  emailHref: 'mailto:prachya.biswas@g.bracu.ac.bd',
   contactInvitation:
     'Have a project, a research idea or a question about math olympiads? Send me a message.',
-  footerTagline: 'Machine Learning • Data Science • Mathematics • Teaching',
+  footerTagline: 'AI/ML • Data Science • Math Olympiad',
 };
 
 export const experience: ExperienceItem[] = [
   {
     organization: 'ML & AI Research Lab, Bangladesh',
-    logo: '/logos/placeholder.svg',
     role: 'Research Secretary',
-    period: '[period]',
+    tag: '[tag]',
+    period: 'Apr 7, 2026 – Present',
+    location: 'Dhaka, Bangladesh',
     description:
       'Secretary of a research lab for machine learning and AI in Bangladesh.',
   },
   {
     organization: 'Bangladesh Mathematical Olympiad',
-    logo: '/logos/placeholder.svg',
     role: 'Academic Team Member',
-    period: '[period]',
+    tag: '[tag]',
+    period: 'Dec 11, 2025 – Present',
+    location: 'Dhaka, Bangladesh',
     description: 'Academic team member at the national math olympiad.',
   },
   {
+    organization: 'IEEE BRAC University Student Branch',
+    role: 'Secretariat',
+    tag: '[tag]',
+    period: 'Jun 25, 2026 – Present',
+    location: 'Dhaka, Bangladesh',
+    description: 'Part of the branch secretariat.',
+  },
+  {
     organization: 'MediSense BD',
-    logo: '/logos/placeholder.svg',
     role: 'Data Scientist',
+    tag: '[tag]',
     period: '[period]',
+    location: 'Dhaka, Bangladesh',
     description:
       'Implemented the TRACE model for a national health and epidemic forecasting platform.',
   },
   {
     organization: 'Vangari AI (IDSOL 2026)',
-    logo: '/logos/placeholder.svg',
     role: 'Data Scientist',
+    tag: '[tag]',
     period: '2026',
+    location: 'Dhaka, Bangladesh',
     description:
       'Data science side of a waste classification project, compared ViT-Small and EfficientNet-B0 for the image classifier.',
   },
   {
-    organization: 'IEEE BRAC University Student Branch',
-    logo: '/logos/placeholder.svg',
-    role: 'Secretariat',
-    period: '[period]',
-    description: 'Part of the branch secretariat.',
-  },
-  {
     organization:
       'BRAC University Entrepreneurship Development Forum (BUEDF)',
-    logo: '/logos/placeholder.svg',
     role: 'Sub-Executive, Human Resources',
+    tag: '[tag]',
     period: '[period]',
+    location: 'Dhaka, Bangladesh',
     description: '[one line from Prachya]',
   },
 ];
 
 export const achievements: Achievements = {
-  awards: [
+  honors: [
     {
-      id: 'bdmo-champion',
-      title: 'Champion, Bangladesh Mathematical Olympiad (BdMO)',
-      year: '[year, category]',
-      detail: 'National champion.',
+      id: 'certificate-of-excellence',
+      icon: 'award',
+      title: 'Certificate of Excellence',
+      year: '2026',
+      detail: 'For Academic Team contributions at the Bangladesh Mathematical Olympiad.',
+      certificatePath: '/certificates/certificate-of-excellence.jpg',
+      certificateAlt: 'Certificate of Excellence at the Bangladesh Mathematical Olympiad',
     },
     {
-      id: 'blockchain-ai-finalist',
-      title: 'Finalist, Bangladesh Blockchain and AI Olympiad',
+      id: 'bbaio-finalist',
+      icon: 'trophy',
+      title: 'Finalist, Bangladesh Blockchain and AI Olympiad (BBAIO)',
       year: '[year]',
-      detail: 'AI category.',
+      detail: 'Reached the final in the AI category.',
+      certificatePath: '/certificates/bbaio.jpg',
+      certificateAlt: 'Bangladesh Blockchain and AI Olympiad finalist certificate',
+    },
+    {
+      id: 'idsol-2026',
+      icon: 'globe',
+      title: 'Participant, International Data Science Olympiad (IDSOL)',
+      year: '2026',
+      detail: 'Presented Vangari AI and led the data science side of the team.',
+    },
+    {
+      id: 'bdmo-regional-champion',
+      icon: 'target',
+      title: 'Former Regional Champion, Bangladesh Mathematical Olympiad',
+      year: '[year]',
+      detail: 'Champion at the regional round of BdMO.',
+    },
+    {
+      id: 'ibm-ml-professional',
+      icon: 'brain',
+      title: 'IBM Machine Learning Professional Certificate',
+      year: '[year]',
+      detail: 'Professional certificate from the IBM Skills Network.',
+    },
+    {
+      id: 'national-childrens-award',
+      icon: 'award',
+      title: 'National Children\'s Award',
+      year: '2019',
+      detail: 'First place in both the Quiz Contest and the Science Project Contest.',
+    },
+    {
+      id: 'promising-debater',
+      icon: 'mic',
+      title: 'Former Promising Debater',
+      year: '[year]',
+      detail: 'Recognised at the RC CTG.mid CITY-Drishti School of Debate.',
+    },
+    {
+      id: 'duke-of-edinburgh-bronze',
+      icon: 'award',
+      title:
+        "Bronze Standard Award, The Duke of Edinburgh's International Award",
+      year: '[year]',
+      detail: 'Completed the Bronze level of the international award programme.',
+      certificatePath: '/certificates/duke-of-edinburgh.jpg',
+      certificateAlt: "Duke of Edinburgh's Bronze Award certificate",
     },
   ],
   competitions: [
     {
-      id: 'idsol-2026',
-      title: 'IDSOL (International Data Science Olympiad)',
-      year: '2026',
-      detail: 'Presented Vangari AI; data science side of the team.',
-    },
-    {
       id: 'imlo-2026',
+      icon: 'brain',
       title: 'International Machine Learning Olympiad (IMLO)',
       year: '2026',
       detail: 'Team of 3.',
     },
     {
       id: 'nasa-space-apps-2026',
+      icon: 'globe',
       title: 'NASA Space Apps Challenge, Dhaka',
       year: '2026',
       detail: 'Data Science Lead, team Agnishikha, project AstraFlame.',
@@ -456,7 +519,11 @@ export const skills: SkillGroup[] = [
     title: 'Languages',
     icon: 'code',
     column: 1,
-    skills: [{ name: 'Python', icon: 'python' }],
+    skills: [
+      { name: 'Python', icon: 'python' },
+      { name: 'Java' },
+      { name: 'TypeScript' },
+    ],
   },
   {
     title: 'Machine Learning',
@@ -469,6 +536,7 @@ export const skills: SkillGroup[] = [
       { name: 'SVM' },
       { name: 'Neural Networks' },
       { name: 'Time Series Analysis' },
+      { name: 'Gaussian Processes' },
     ],
   },
   {
@@ -476,9 +544,15 @@ export const skills: SkillGroup[] = [
     icon: 'chart',
     column: 1,
     skills: [
+      { name: 'Scikit-Learn' },
       { name: 'NumPy', icon: 'numpy' },
+      { name: 'Pandas' },
+      { name: 'SciPy' },
+      { name: 'Matplotlib' },
+      { name: 'Jupyter Notebook' },
+      { name: 'Data Preprocessing & Feature Engineering' },
       { name: 'Data Pipelines' },
-      { name: 'Model Evaluation' },
+      { name: 'Model Evaluation & Cross-Validation' },
     ],
   },
   {
@@ -505,6 +579,26 @@ export const skills: SkillGroup[] = [
     ],
   },
   {
+    title: 'Backend and Web',
+    icon: 'globe',
+    column: 2,
+    skills: [
+      { name: 'Next.js' },
+      { name: 'React' },
+      { name: 'FastAPI' },
+      { name: 'Express.js' },
+    ],
+  },
+  {
+    title: 'Databases',
+    icon: 'database',
+    column: 2,
+    skills: [
+      { name: 'PostgreSQL' },
+      { name: 'PostGIS' },
+    ],
+  },
+  {
     title: 'Tools',
     icon: 'terminal',
     column: 3,
@@ -512,6 +606,18 @@ export const skills: SkillGroup[] = [
       { name: 'Git', icon: 'git' },
       { name: 'GitHub', icon: 'github' },
       { name: 'Google Colab', icon: 'googlecolab' },
+    ],
+  },
+  {
+    title: 'DevOps and Infrastructure',
+    icon: 'terminal',
+    column: 3,
+    skills: [
+      { name: 'Docker' },
+      { name: 'Docker Compose' },
+      { name: 'GitHub Actions' },
+      { name: 'Linux' },
+      { name: 'Azure' },
     ],
   },
   {
@@ -536,16 +642,22 @@ export const projects: Project[] = [
     id: 'medisense-bd',
     title: 'MediSense BD',
     description:
-      'National health and epidemic forecasting platform; Prachya implemented the TRACE forecasting model as data scientist.',
-    tech: ['Python', 'time series'],
-    links: [],
+      'An integrated national health intelligence platform for Bangladesh. It forecasts dengue, diarrhea, influenza, typhoid and malaria risk across all 64 districts, and adds hospital routing, drug verification and Bengali symptom triage. Prachya implemented the TRACE forecasting model as data scientist.',
+    tech: ['Python', 'scikit-learn', 'LSTM', 'Next.js', 'PostgreSQL'],
+    links: [
+      {
+        label: 'GitHub',
+        href: 'https://github.com/prachyabiswas',
+        icon: 'github',
+      },
+    ],
   },
   {
     id: 'vangari-ai',
     title: 'Vangari AI',
     description:
-      'Waste classification project that grew into a full-stack waste marketplace app; classifies waste into organic, recyclable and non-recyclable.',
-    tech: ['PyTorch', 'timm', 'ViT-Small', 'EfficientNet-B0'],
+      'A waste marketplace that connects waste owners with certified collectors. A photo of scrap goes in, and the AI estimates the material mix, weight and payout, then the nearest collector is dispatched. Built for IDSOL 2026, with Prachya leading the data science side.',
+    tech: ['Gemma 4', 'PyTorch', 'ViT-Small', 'EfficientNet-B0', 'Next.js'],
     links: [
       {
         label: 'GitHub',
@@ -558,16 +670,22 @@ export const projects: Project[] = [
     id: 'astraflame',
     title: 'AstraFlame',
     description:
-      'AI dashboard that ranks spacecraft fire risk of materials using NASA combustion data (Saffire and BASS), built for NASA Space Apps Challenge 2026 with team Agnishikha.',
-    tech: ['Python', 'machine learning', 'NASA data'],
-    links: [],
+      'Team AgniShikha\'s entry for NASA Space Apps Challenge 2026 (Dhaka), "Flame in Freefall". From oxygen level, pressure, airflow and material it estimates flame spread, extinction and smoke, trained on 850 NASA microgravity combustion runs, with error bands and a warning when a condition was never tested. Prachya was Data Science Lead.',
+    tech: ['Python', 'scikit-learn', 'Gaussian process', 'Next.js', 'NASA data'],
+    links: [
+      {
+        label: 'GitHub',
+        href: 'https://github.com/prachyabiswas',
+        icon: 'github',
+      },
+    ],
   },
   {
     id: 'agentic-ai-from-scratch',
     title: 'Agentic-AI-From-Scratch',
     description:
-      'Notes and practice code on agentic AI, RAG and LangChain, written so a beginner can follow end to end.',
-    tech: ['Python', 'LangChain', 'RAG'],
+      'A beginner-friendly learning repo on generative AI, RAG and agentic AI with LangChain, built module by module. It has theory notes and working code: first LLM calls, a blood report analysis app with a Streamlit UI, ChromaDB semantic search and a RAG pipeline.',
+    tech: ['Python', 'LangChain', 'RAG', 'ChromaDB', 'Streamlit'],
     links: [
       {
         label: 'GitHub',
@@ -580,16 +698,22 @@ export const projects: Project[] = [
     id: 'ml-algorithms-from-scratch',
     title: 'Machine learning algorithms from scratch',
     description:
-      'Linear and logistic regression, KNN, SVM and a neural network written in NumPy.',
+      'Linear regression, logistic regression, KNN, SVM and a neural network, each written from scratch in NumPy without ML libraries.',
     tech: ['Python', 'NumPy'],
-    links: [],
+    links: [
+      {
+        label: 'GitHub',
+        href: 'https://github.com/prachyabiswas',
+        icon: 'github',
+      },
+    ],
   },
   {
     id: 'computational-biology-meets-cells',
     title: 'Computational Biology Meets Cells',
     description:
-      'Module-by-module notes from self-study of bioinformatics and computational biology course material.',
-    tech: ['Bioinformatics', 'Python'],
+      'Module-by-module notes from self-study of bioinformatics, with annotated commands and solved exercises. The 17-module plan covers sequence alignment, genome assembly, protein structure, phylogenetics, RNA-seq and multi-omics, with single-cell analysis (Seurat, CellChat, Monocle) planned.',
+    tech: ['Bioinformatics', 'Python', 'R', 'Biopython', 'Conda'],
     links: [
       {
         label: 'GitHub',
@@ -641,55 +765,71 @@ export const leadership: LeadershipItem[] = [
 /** Five seminars are listed in the doc; the main page shows the latest three. */
 export const seminars: Seminar[] = [
   {
-    id: 'machine-learning-2026-ai-seminar',
+    slug: 'machine-learning-2026-ai-seminar',
     title: 'Machine Learning 2026: Artificial Intelligence seminar',
     host: 'IEEE CUET Student Branch',
     date: '[date]',
     topic: '[topic]',
-    description: '[description from Prachya]',
-    photos: ['/images/writing-placeholder.svg'],
+    summary: '[summary from Prachya]',
+    details:
+      "Machine Learning 2026: Artificial Intelligence seminar, organised by the IEEE CUET Student Branch. Prachya conducted the session as a speaker. Photos, date and the full topic list will be added here.",
+    topics: [],
+    photos: [],
     links: [{ label: 'Event post' }],
   },
   {
-    id: 'seminar-placeholder-2',
+    slug: 'seminar-placeholder-2',
     title: '[event name]',
-    host: '[host: CUET, CU or IIUC]',
+    host: '[host: CUET or CU]',
     date: '[date]',
     topic: '[topic]',
-    description: '[description from Prachya]',
-    photos: ['/images/writing-placeholder.svg'],
+    summary: '[summary from Prachya]',
+    details: '',
+    topics: [],
+    photos: [],
     links: [{ label: 'Video' }],
   },
   {
-    id: 'seminar-placeholder-3',
+    slug: 'seminar-placeholder-3',
     title: '[event name]',
     host: '[host]',
     date: '[date]',
     topic: '[topic]',
-    description: '[description from Prachya]',
-    photos: ['/images/writing-placeholder.svg'],
+    summary: '[summary from Prachya]',
+    details: '',
+    topics: [],
+    photos: [],
     links: [{ label: 'Facebook post' }],
   },
   {
-    id: 'seminar-placeholder-4',
+    slug: 'seminar-placeholder-4',
     title: '[event name]',
     host: '[host]',
     date: '[date]',
     topic: '[topic]',
-    description: '[description from Prachya]',
-    photos: ['/images/writing-placeholder.svg'],
+    summary: '[summary from Prachya]',
+    details: '',
+    topics: [],
+    photos: [],
     links: [{ label: 'Facebook post' }],
   },
   {
-    id: 'seminar-placeholder-5',
+    slug: 'seminar-placeholder-5',
     title: '[event name]',
     host: '[host]',
     date: '[date]',
     topic: '[topic]',
-    description: '[description from Prachya]',
-    photos: ['/images/writing-placeholder.svg'],
+    summary: '[summary from Prachya]',
+    details: '',
+    topics: [],
+    photos: [],
     links: [{ label: 'Facebook post' }],
   },
+];
+
+/** Media features are hidden until Prachya sends at least one real link. */
+export const features: FeatureItem[] = [
+  { source: 'Jamuna TV', href: '', line: '[one line from Prachya]' },
 ];
 
 export const books: Book[] = [
@@ -705,6 +845,16 @@ export const books: Book[] = [
 
 export const socialLinks: SocialLink[] = [
   {
+    label: 'Email',
+    href: profile.emailHref,
+    icon: 'mail',
+  },
+  {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/prachya.biswas',
+    icon: 'facebook',
+  },
+  {
     label: 'GitHub',
     href: 'https://github.com/prachyabiswas',
     icon: 'github',
@@ -713,11 +863,6 @@ export const socialLinks: SocialLink[] = [
     label: 'LinkedIn',
     href: 'https://linkedin.com/in/prachya-biswas-06715932a',
     icon: 'linkedin',
-  },
-  {
-    label: 'Email',
-    href: 'mailto:[email]',
-    icon: 'mail',
   },
 ];
 
@@ -768,7 +913,7 @@ export const navigation: Navigation = {
 export const copy: SiteCopy = {
   sectionTitles: {
     experience: 'Experience',
-    achievements: 'Achievements',
+    achievements: 'Honors and achievements',
     skills: 'Skills',
     projects: 'Projects',
     leadership: 'Leadership and Mentorship',
@@ -786,11 +931,13 @@ export const copy: SiteCopy = {
     moreProjects: 'More Projects on GitHub',
   },
   achievements: {
-    awardsTitle: 'Awards and recognition',
+    honorsTitle: 'Honors and achievements',
     competitionsTitle: 'Competitions entered',
     achievement: 'Achievement',
     year: 'Year',
     detail: 'Detail',
+    viewCertificate: 'View certificate',
+    close: 'Close',
   },
   form: {
     name: 'Name',
@@ -806,9 +953,9 @@ export const copy: SiteCopy = {
     messageError: 'Message must be between 10 and 2000 characters.',
     invalidForm: 'Please fix the highlighted fields and try again.',
     serverError:
-      'Something went wrong. Please email me directly at [email].',
+      'Something went wrong. Please email me directly at prachya.biswas@g.bracu.ac.bd.',
     networkError:
-      'Something went wrong. Please email me directly at [email].',
+      'Something went wrong. Please email me directly at prachya.biswas@g.bracu.ac.bd.',
     success: 'Thanks, your message is sent. I will reply soon.',
     honeypot: 'Company',
   },
@@ -857,14 +1004,17 @@ export const copy: SiteCopy = {
     booksEmpty: 'The reading list is coming soon.',
   },
   talks: {
-    intro:
-      'I have also conducted seminars and workshops at CUET, CU and IIUC.',
+    intro: 'I have also conducted seminars and workshops at CUET and CU.',
     viewAll: 'View all seminars',
     eventPost: 'Event post',
     video: 'Video',
     facebookPost: 'Facebook post',
     photos: 'Photos',
     noTalks: 'Seminar details are coming soon.',
+    aboutSession: 'About this session',
+    topicsCovered: 'Topics covered',
+    backToTalks: 'Back to Talks',
+    featuresTitle: 'Features and media',
   },
   blog: {
     subtitle:

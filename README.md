@@ -142,12 +142,12 @@ The contact form validates in the browser and again on the server, includes a ho
 
 ## Replacement checklist before publishing
 
-- [ ] Replace `public/images/prachya_light.jpg` and `prachya_dark.jpg` with final portraits and update `profile.photoLight` / `profile.photoDark`.
-- [ ] Replace `public/logos/placeholder.svg` with real organization logos and update `experience[].logo`.
-- [ ] Replace `profile.email`, the LinkedIn/Kaggle/social URLs and the biography/`introSegments` placeholder links. GitHub already points to `github.com/prachyabiswas`.
-- [ ] Replace all placeholder stats and project metrics with verified numbers (remove `placeholder: true`).
-- [ ] Replace all experience, education, achievements, skills, projects, leadership and talks placeholder text with real content.
-- [ ] Confirm the skills list matches what you can actually discuss in an interview.
-- [ ] Replace both sample MDX articles and `public/images/writing-placeholder.svg` with real writing and figures.
+- [ ] Add the three organization logos and set `experience[].logo` / `experience[].organizationUrl` when Prachya sends them. Initials are shown until then.
+- [ ] Add the certificate JPGs at `public/certificates/*.jpg`; the “View certificate” labels appear automatically when the files exist.
+- [ ] Add seminar photos under `public/talks/[slug]/` and fill the missing seminar dates, summaries, topics and reference links.
+- [ ] Replace `[period]`, `[year]`, `[tag]` and `[one line from Prachya]` placeholders across content as real values arrive.
+- [ ] Add Kaggle and IEEE BRACU URLs to `socialLinks` / JSON-LD `sameAs` once they are sent.
+- [ ] Replace the sample article, sample note and sample post with real MDX files and real photos.
+- [ ] Set `NEXT_PUBLIC_SITE_URL` to the purchased domain and finish the Vercel domain setup.
 - [ ] Set `NEXT_PUBLIC_SITE_URL` to your real domain and finish the Vercel domain setup.
 - [ ] Add a real `RESEND_API_KEY`, `CONTACT_TO_EMAIL` and a verified sending domain.
