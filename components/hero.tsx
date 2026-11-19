@@ -64,7 +64,7 @@ export function Hero() {
         </Reveal>
 
         <Reveal delay={120} className="order-1 md:order-2">
-          <div className="relative mx-auto w-full max-w-sm">
+          <div className="relative mx-auto w-full max-w-sm md:ml-auto md:mr-0 md:translate-x-3">
             <div className="absolute -inset-5 rounded-[2.5rem] bg-accent-gradient opacity-25 blur-3xl" />
             <div className="relative aspect-square overflow-hidden rounded-[2rem] border border-line bg-surface shadow-glow">
               <Image

@@ -174,9 +174,21 @@ export interface DecorativeSymbol {
   mobile?: boolean;
 }
 
+export interface DecorativeParticle {
+  /** Position as a percentage of the viewport. */
+  x: number;
+  y: number;
+  /** Diameter in pixels. */
+  size: number;
+  delay: number;
+  duration: number;
+  color: 'accent' | 'accent-2';
+}
+
 export interface DecorativeContent {
   codeLines: string[];
   symbols: DecorativeSymbol[];
+  particles: DecorativeParticle[];
 }
 
 export interface NavItem {
@@ -914,5 +926,31 @@ export const decorative: DecorativeContent = {
     { char: 'σ', x: 28, y: 32, size: 1.5, delay: 5.7, mobile: true },
     { char: 'λθ', x: 56, y: 6, size: 1.0, delay: 2.9, blur: true },
     { char: '01', x: 16, y: 6, size: 1.1, delay: 3.5 },
+  ],
+  particles: [
+    { x: 8, y: 22, size: 3, delay: 0, duration: 12, color: 'accent' },
+    { x: 19, y: 68, size: 2, delay: 1.4, duration: 15, color: 'accent-2' },
+    { x: 31, y: 14, size: 4, delay: 2.8, duration: 18, color: 'accent' },
+    { x: 42, y: 82, size: 2, delay: 0.7, duration: 11, color: 'accent' },
+    { x: 54, y: 38, size: 3, delay: 3.6, duration: 14, color: 'accent-2' },
+    { x: 66, y: 72, size: 2, delay: 1.9, duration: 16, color: 'accent' },
+    { x: 74, y: 18, size: 4, delay: 4.2, duration: 19, color: 'accent' },
+    { x: 86, y: 54, size: 3, delay: 0.3, duration: 13, color: 'accent-2' },
+    { x: 93, y: 86, size: 2, delay: 2.2, duration: 17, color: 'accent' },
+    { x: 12, y: 92, size: 3, delay: 5.1, duration: 15, color: 'accent-2' },
+    { x: 27, y: 46, size: 2, delay: 3.3, duration: 12, color: 'accent' },
+    { x: 38, y: 28, size: 3, delay: 6.4, duration: 20, color: 'accent-2' },
+    { x: 58, y: 8, size: 2, delay: 4.8, duration: 14, color: 'accent' },
+    { x: 69, y: 94, size: 4, delay: 1.1, duration: 18, color: 'accent-2' },
+    { x: 81, y: 34, size: 2, delay: 5.7, duration: 13, color: 'accent' },
+    { x: 95, y: 12, size: 3, delay: 2.6, duration: 16, color: 'accent-2' },
+    { x: 4, y: 58, size: 4, delay: 3.9, duration: 17, color: 'accent' },
+    { x: 23, y: 8, size: 3, delay: 0.9, duration: 13, color: 'accent-2' },
+    { x: 35, y: 62, size: 5, delay: 5.4, duration: 21, color: 'accent' },
+    { x: 48, y: 48, size: 3, delay: 1.7, duration: 15, color: 'accent-2' },
+    { x: 61, y: 26, size: 4, delay: 4.4, duration: 19, color: 'accent' },
+    { x: 77, y: 80, size: 3, delay: 2.1, duration: 12, color: 'accent-2' },
+    { x: 89, y: 44, size: 5, delay: 6.1, duration: 22, color: 'accent' },
+    { x: 99, y: 68, size: 3, delay: 1.3, duration: 16, color: 'accent-2' },
   ],
 };

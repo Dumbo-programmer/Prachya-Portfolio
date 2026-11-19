@@ -100,7 +100,7 @@ Notes live in `content/notes/` (`group` is `Machine Learning`, `AI` or `Mathemat
 
 Colors, fonts, radius, spacing and shadows are defined once in `app/globals.css` and exposed through `tailwind.config.ts`. Dark is the default; `html.light` switches tokens. The choice is stored in `localStorage` as `portfolio-theme`, and an inline script in `app/layout.tsx` applies it before paint to avoid a flash. Floating controls at the bottom right toggle the theme and scroll to top.
 
-`components/dark-background.tsx` renders the decorative code layer and floating symbols only in dark mode. It is `fixed`, `pointer-events-none`, `aria-hidden="true"`, `data-nosnippet`, respects `prefers-reduced-motion` and reduces elements on mobile.
+`components/atmospheric-background.tsx` renders the drifting code layer, floating symbols and moving glowing particles in both themes (code appears on both sides of the viewport; particles are stronger in dark mode and subtle in light mode). It is `fixed`, `pointer-events-none`, `aria-hidden="true"`, `data-nosnippet`, respects `prefers-reduced-motion` and reduces elements on mobile.
 
 ## Environment variables
 

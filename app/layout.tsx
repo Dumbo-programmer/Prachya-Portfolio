@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Noto_Sans_Bengali } from 'next/font/google';
 import type { ReactNode } from 'react';
 import './globals.css';
-import { DarkBackground } from '@/components/dark-background';
+import { AtmosphericBackground } from '@/components/atmospheric-background';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
 import { FloatingControls } from '@/components/theme/floating-controls';
@@ -113,7 +113,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <ThemeProvider>
-          <DarkBackground />
+          <AtmosphericBackground />
           <Navbar showWriting={getArticleSummaries().length > 1} />
           <main className="relative z-10">{children}</main>
           <Footer />

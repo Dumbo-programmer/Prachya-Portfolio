@@ -214,7 +214,7 @@ export function Navbar({ showWriting = true }: { showWriting?: boolean }) {
       {mobileOpen && (
         <div
           id="nav-mobile-menu"
-          className="mt-2 flex flex-col gap-1 rounded-card border border-line bg-surface p-3 shadow-card lg:hidden"
+          className="mt-2 flex max-h-[calc(100vh-6rem)] flex-col gap-1 overflow-y-auto rounded-card border border-line bg-surface p-3 shadow-card lg:hidden"
         >
           {[...navigation.primary, ...moreItems].map((item) =>
             renderLink(item, () => setMobileOpen(false)),

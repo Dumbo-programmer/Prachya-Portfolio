@@ -54,7 +54,7 @@ const config: Config = {
         },
         'code-drift': {
           from: { transform: 'translateY(0)' },
-          to: { transform: 'translateY(-50%)' },
+          to: { transform: 'translateY(-25%)' },
         },
         'float-slow': {
           '0%, 100%': { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
@@ -64,12 +64,26 @@ const config: Config = {
           '0%, 100%': { opacity: '0.35', transform: 'scale(1)' },
           '50%': { opacity: '0.6', transform: 'scale(1.08)' },
         },
+        'particle-drift': {
+          '0%': { opacity: '0', transform: 'translate3d(0, 0, 0) scale(0.6)' },
+          '15%': { opacity: '0.9' },
+          '50%': {
+            opacity: '0.6',
+            transform: 'translate3d(18px, -26px, 0) scale(1)',
+          },
+          '85%': { opacity: '0.9' },
+          '100%': {
+            opacity: '0',
+            transform: 'translate3d(36px, -52px, 0) scale(0.6)',
+          },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.6s ease-out both',
         'code-drift': 'code-drift var(--code-drift-duration, 70s) linear infinite',
         'float-slow': 'float-slow var(--symbol-float-duration, 14s) ease-in-out infinite',
         'pulse-glow': 'pulse-glow 12s ease-in-out infinite',
+        'particle-drift': 'particle-drift 14s ease-in-out infinite',
       },
       transitionTimingFunction: {
         soft: 'cubic-bezier(0.22, 1, 0.36, 1)',
