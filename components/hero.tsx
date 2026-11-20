@@ -59,7 +59,7 @@ export function Hero() {
             className="mt-7 text-[44px] font-extrabold leading-[1.05] tracking-tight sm:text-[56px] lg:text-[72px]"
           >
             Hi I&apos;m <span className="hero-name-gradient">Prachya</span>{' '}
-            <span className="text-white">Biswas</span>
+            <span className="text-foreground">Biswas</span>
           </h1>
 
           <p className="mt-3 text-lg font-medium text-muted sm:text-xl">

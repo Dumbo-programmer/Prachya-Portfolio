@@ -410,33 +410,6 @@ export const experience: ExperienceItem[] = [
     location: 'Dhaka, Bangladesh',
     description: 'Part of the branch secretariat.',
   },
-  {
-    organization: 'MediSense BD',
-    role: 'Data Scientist',
-    tag: '[tag]',
-    period: '[period]',
-    location: 'Dhaka, Bangladesh',
-    description:
-      'Implemented the TRACE model for a national health and epidemic forecasting platform.',
-  },
-  {
-    organization: 'Vangari AI (IDSOL 2026)',
-    role: 'Data Scientist',
-    tag: '[tag]',
-    period: '2026',
-    location: 'Dhaka, Bangladesh',
-    description:
-      'Data science side of a waste classification project, compared ViT-Small and EfficientNet-B0 for the image classifier.',
-  },
-  {
-    organization:
-      'BRAC University Entrepreneurship Development Forum (BUEDF)',
-    role: 'Sub-Executive, Human Resources',
-    tag: '[tag]',
-    period: '[period]',
-    location: 'Dhaka, Bangladesh',
-    description: '[one line from Prachya]',
-  },
 ];
 
 export const achievements: Achievements = {
@@ -781,9 +754,12 @@ export const seminars: Seminar[] = [
     topic: '[topic]',
     summary: '[summary from Prachya]',
     details:
-      "Machine Learning 2026: Artificial Intelligence seminar, organised by the IEEE CUET Student Branch. Prachya conducted the session as a speaker. Photos, date and the full topic list will be added here.",
+      "Machine Learning 2026: Artificial Intelligence seminar, organised by the IEEE CUET Student Branch. Prachya conducted the session as a speaker. Photos from the session are below; date and the full topic list will be added here.",
     topics: [],
-    photos: [],
+    photos: [
+      '/images/cuet_workshop_pic_1.jpg',
+      '/images/cuet_workshop_pic_2.jpg',
+    ],
     links: [{ label: 'Event post' }],
   },
   {
@@ -795,7 +771,7 @@ export const seminars: Seminar[] = [
     summary: '[summary from Prachya]',
     details: '',
     topics: [],
-    photos: [],
+    photos: ['/images/cu_workshop_pic1.jpg'],
     links: [{ label: 'Video' }],
   },
   {
@@ -807,7 +783,7 @@ export const seminars: Seminar[] = [
     summary: '[summary from Prachya]',
     details: '',
     topics: [],
-    photos: [],
+    photos: ['/images/cu_workshop_pic2.jpg'],
     links: [{ label: 'Facebook post' }],
   },
   {
@@ -819,7 +795,7 @@ export const seminars: Seminar[] = [
     summary: '[summary from Prachya]',
     details: '',
     topics: [],
-    photos: [],
+    photos: ['/images/cu_workshop_pic3.jpg'],
     links: [{ label: 'Facebook post' }],
   },
   {
@@ -831,7 +807,7 @@ export const seminars: Seminar[] = [
     summary: '[summary from Prachya]',
     details: '',
     topics: [],
-    photos: [],
+    photos: ['/images/cu_workshop_pic4.jpg'],
     links: [{ label: 'Facebook post' }],
   },
 ];
