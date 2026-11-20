@@ -29,8 +29,8 @@ html.dark {
   --code-opacity: 0.28;
   --code-num-opacity: 0.18;
   --symbol-opacity: 0.2;
-  --particle-core-opacity: 0.95;
-  --particle-glow-opacity: 0.35;
+  --particle-core-opacity: 1;
+  --particle-glow-opacity: 0.5;
 
   --shadow-card: 0 18px 45px -28px rgba(0, 0, 0, 0.9);
   --shadow-glow: 0 0 60px -18px rgba(96, 165, 250, 0.5);
@@ -61,8 +61,8 @@ html.light {
   --code-opacity: 0.14;
   --code-num-opacity: 0.09;
   --symbol-opacity: 0.12;
-  --particle-core-opacity: 0.55;
-  --particle-glow-opacity: 0.2;
+  --particle-core-opacity: 0.8;
+  --particle-glow-opacity: 0.3;
 
   --shadow-card: 0 16px 40px -26px rgba(20, 30, 60, 0.3);
   --shadow-glow: 0 0 50px -24px rgba(37, 99, 235, 0.3);
@@ -179,6 +179,28 @@ html.light {
 
   html.light .hero-name-gradient {
     background-image: linear-gradient(100deg, #7c3aed 0%, #6d28d9 35%, #0891b2 100%);
+  }
+
+  .star-particle::before,
+  .star-particle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 999px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    opacity: 0.75;
+  }
+
+  .star-particle::before {
+    width: 1px;
+    height: 12px;
+  }
+
+  .star-particle::after {
+    width: 12px;
+    height: 1px;
   }
 
   .text-gradient {

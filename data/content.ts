@@ -72,6 +72,10 @@ export interface Profile {
   location: string;
   email: string;
   emailHref: string;
+  photoLight: string;
+  photoDark: string;
+  photoAlt: string;
+  photoCaption: string;
   contactInvitation: string;
   footerTagline: string;
 }
@@ -245,6 +249,7 @@ export interface SiteCopy {
     detail: string;
     viewCertificate: string;
     close: string;
+    certificates: string;
   };
   form: {
     name: string;
@@ -351,12 +356,12 @@ export interface SiteCopy {
 export const profile: Profile = {
   name: 'Prachya Biswas',
   shortName: 'PB',
-  title: 'Computer Science student at BRAC University, Dhaka',
+  title: 'Computer Science student at Brac University',
   tagline: 'AI/ML • Data Science • Math Olympiad',
   badgeText: 'AI/ML • Data Science • Math Olympiad',
   heroTagline: 'Trying to learn what machines learn',
   heroHighlight:
-    'Regional Champion at BdMO · Academic Team Member at Bangladesh Mathematical Olympiad',
+    'Regional Champion at BdMO · Problem setter at Bangladesh Mathematical Olympiad',
   metaDescription:
     'Prachya Biswas is a Computer Science student at BRAC University, Dhaka, working on machine learning and data science and serving as an academic team member at the Bangladesh Mathematical Olympiad.',
   seoKeywords: [
@@ -370,6 +375,10 @@ export const profile: Profile = {
   location: 'Dhaka, Bangladesh',
   email: 'prachya.biswas@g.bracu.ac.bd',
   emailHref: 'mailto:prachya.biswas@g.bracu.ac.bd',
+  photoLight: '/images/prachya_light.jpg',
+  photoDark: '/images/prachya_dark.jpg',
+  photoAlt: 'Portrait of Prachya Biswas',
+  photoCaption: 'Prachya Biswas',
   contactInvitation:
     'Have a project, a research idea or a question about math olympiads? Send me a message.',
   footerTagline: 'AI/ML • Data Science • Math Olympiad',
@@ -938,6 +947,7 @@ export const copy: SiteCopy = {
     detail: 'Detail',
     viewCertificate: 'View certificate',
     close: 'Close',
+    certificates: 'Certificates',
   },
   form: {
     name: 'Name',

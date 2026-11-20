@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { AchievementsSection } from '@/components/achievements';
-import { BlogSection } from '@/components/blog/blog-section';
 import { Contact } from '@/components/contact';
 import { ExperienceSection } from '@/components/experience';
 import { Hero } from '@/components/hero';
@@ -49,7 +48,6 @@ export default function HomePage() {
       <LeadershipSection />
       <WritingSection />
       <TalksSection />
-      <BlogSection />
       <Contact />
     </>
   );

@@ -2,23 +2,15 @@ import { decorative } from '@/data/content';
 
 /**
  * Decorative-only atmosphere, rendered on every page in both themes.
- * Drifting code appears on both sides of the viewport, and glowing particles
+ * Drifting code appears on the left side only, and moving star particles
  * are present in both themes (stronger in dark mode). Everything is fixed, non-interactive,
  * aria-hidden and data-nosnippet so it never reads as page content.
  */
 export function AtmosphericBackground() {
-  const codeColumn = (side: 'left' | 'right') => {
-    const reverse = side === 'right';
+  const codeColumn = () => {
     return (
-      <div
-        className={`absolute inset-y-0 w-1/2 overflow-hidden font-mono text-[11px] leading-7 sm:text-xs lg:text-sm ${
-          reverse ? 'right-0' : 'left-0'
-        }`}
-      >
-        <div
-          className="animate-code-drift will-change-transform"
-          style={reverse ? { animationDirection: 'reverse' } : undefined}
-        >
+      <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden font-mono text-[11px] leading-7 sm:text-xs lg:text-sm">
+        <div className="animate-code-drift will-change-transform">
           {[0, 1, 2, 3].map((copy) => (
             <div key={copy} className="space-y-1 py-3">
               {decorative.codeLines.map((line, index) => (
@@ -82,9 +74,8 @@ export function AtmosphericBackground() {
         }}
       />
 
-      {/* Drifting code on both the left and right, with a seamless loop. */}
-      {codeColumn('left')}
-      {codeColumn('right')}
+      {/* Drifting code on the left only, with a seamless loop. */}
+      {codeColumn()}
 
       {/* Floating math / coding symbols */}
       <div className="absolute inset-0">
@@ -118,7 +109,7 @@ export function AtmosphericBackground() {
           return (
             <span
               key={`${particle.x}-${particle.y}-${index}`}
-              className="absolute rounded-full blur-[2px] animate-particle-drift"
+              className="star-particle absolute rounded-full animate-particle-drift"
               style={{
                 left: `${particle.x}%`,
                 top: `${particle.y}%`,
@@ -127,8 +118,9 @@ export function AtmosphericBackground() {
                 animationDelay: `${particle.delay}s`,
                 animationDuration: `${particle.duration}s`,
                 animationFillMode: 'both',
-                background: `radial-gradient(circle, rgb(var(${rgbVar}) / var(--particle-core-opacity)), transparent 70%)`,
-                boxShadow: `0 0 ${particle.size * 4}px ${particle.size}px rgb(var(${rgbVar}) / var(--particle-glow-opacity))`,
+                color: `rgb(var(${rgbVar}) / var(--particle-core-opacity))`,
+                background: 'currentColor',
+                boxShadow: `0 0 ${particle.size * 5}px ${particle.size}px rgb(var(${rgbVar}) / var(--particle-glow-opacity))`,
               }}
             />
           );
