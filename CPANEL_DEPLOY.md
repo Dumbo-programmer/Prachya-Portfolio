@@ -147,9 +147,21 @@ secret** and add:
 | `CPANEL_HOST` | Your cPanel hostname or server IP. |
 | `CPANEL_USER` | cPanel username. |
 | `CPANEL_SSH_KEY` | Private SSH key whose public key is installed in cPanel → SSH Access. |
+| `CPANEL_SSH_PASSPHRASE` | Only if the private key is passphrase-protected; otherwise leave unset. |
 | `CPANEL_APP_PATH` | `/home/USERNAME/portfolio` |
-| `CPANEL_SSH_PORT` | SSH port, usually `22` (optional). |
+| `CPANEL_SSH_PORT` | The real SSH port shown in cPanel. If unset, the workflow uses `22`. |
 | `NEXT_PUBLIC_SITE_URL` | `https://prachyabiswas.com` (needed at build time). |
+
+If you see `ssh: this private key is passphrase protected`, either add the
+`CPANEL_SSH_PASSPHRASE` secret or regenerate the key without a passphrase:
+
+```bash
+ssh-keygen -t ed25519 -N "" -C github-actions
+```
+
+If you see `connect: connection refused` on port `22`, your host uses a
+different SSH port or SSH is blocked. Check **cPanel → SSH Access** and set
+`CPANEL_SSH_PORT` to that port. Confirm SSH is enabled for your cPanel account.
 
 Generate a key locally with `ssh-keygen -t ed25519 -C github-actions`, paste the
 **private** key into `CPANEL_SSH_KEY`, and add the **public** key to cPanel's
@@ -197,6 +209,8 @@ hook they support.
 | --- | --- |
 | 502 / 503 Bad Gateway | Wrong port in `.htaccess`, app not restarted, or startup file not `server.js`. |
 | `WebAssembly.instantiate(): Out of memory` | You are running `npm run dev` / `next dev` on cPanel, or building inside the LVE. Never run dev mode on the server. Stop the dev process, use startup file `server.js`, and let GitHub Actions build with the workflow above. |
+| `ssh: this private key is passphrase protected` | Add `CPANEL_SSH_PASSPHRASE`, or regenerate the key with `-N ""`. |
+| `dial tcp ...:22: connect: connection refused` | Wrong SSH port/host, SSH disabled, or firewall. Set `CPANEL_SSH_PORT` to the port from cPanel SSH Access. |
 | Page loads but no CSS/JS | `.next/static` was not copied — rerun `npm run build:cpanel` or use the GitHub Actions upload. |
 | Broken portraits / seminar photos | `public/` was not copied — rerun `npm run build:cpanel`. |
 | Contact form says email is unavailable | Set `RESEND_API_KEY` and `CONTACT_TO_EMAIL`, restart the app. |
