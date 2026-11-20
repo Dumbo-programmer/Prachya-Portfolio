@@ -136,7 +136,7 @@ The contact form validates in the browser and again on the server, includes a ho
 
 See [CPANEL_DEPLOY.md](./CPANEL_DEPLOY.md) for full instructions. In short: upload the repo outside `public_html`, set the three environment variables in Node.js Selector, run `npm run build:cpanel`, create the Node.js app with `server.js` as the startup file, and copy `.htaccess.cpanel.example` to `public_html/.htaccess` with the assigned port. `build:cpanel` produces a standalone bundle with `public/` and `.next/static/` copied into it, so the app does not need Vercel to serve assets.
 
-For GitHub auto-deploy with no SSH, `.github/workflows/deploy-cpanel.yml` builds the standalone bundle on GitHub and publishes it to a `deploy` branch. cPanel Git Version Control pulls that branch over HTTPS and `scripts/cpanel-cron-pull.sh` restarts the app, so the shared host never runs `next build`/`next dev`. See [CPANEL_DEPLOY.md](./CPANEL_DEPLOY.md#auto-deploy-from-github-no-ssh-required).
+For GitHub auto-deploy with no SSH, `.github/workflows/deploy-cpanel.yml` builds the standalone bundle on GitHub, attaches `cpanel-standalone.tar.gz` to a GitHub Release, and publishes the built files to a `deploy` branch. cPanel Git Version Control pulls that branch over HTTPS and `scripts/cpanel-cron-pull.sh` restarts the app, so the shared host never runs `next build`/`next dev`. See [CPANEL_DEPLOY.md](./CPANEL_DEPLOY.md#auto-deploy-from-github-no-ssh-required).
 
 ## SEO notes
 

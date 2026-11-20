@@ -40,6 +40,33 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://prachyabiswas.com' }}
         run: npm run build:cpanel
 
+      - name: Package standalone bundle
+        run: tar -czf cpanel-standalone.tar.gz -C .next/standalone .
+
+      - name: Make bundle downloadable
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpanel-standalone
+          path: cpanel-standalone.tar.gz
+          retention-days: 14
+
+      - name: Attach bundle to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: cpanel-deploy
+          name: cPanel standalone build
+          body: |
+            Standalone Next.js bundle for cPanel, built from `${{ github.sha }}`.
+
+            Download `cpanel-standalone.tar.gz`, upload it to the Node.js app
+            directory in cPanel, and extract it so `server.js`, `public/` and
+            `.next/` sit at the top level. Then restart the Node.js app.
+
+            This Release is replaced on every successful push to `main`.
+          target_commitish: ${{ github.sha }}
+          update_existing: true
+          files: cpanel-standalone.tar.gz
+
       - name: Publish bundle to deploy branch
         run: |
           set -e

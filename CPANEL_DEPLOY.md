@@ -179,6 +179,33 @@ No `npm ci`, `npm run build` or `next dev` ever runs on cPanel.
 After this, every push to `main` becomes live within about 5 minutes. You can
 also click **Update from Remote** in cPanel Git Version Control to pull sooner.
 
+### Manual upload of the built site
+
+If you prefer to upload files yourself, do **not** run `npm run build` on
+Windows and upload the result. The standalone bundle contains platform-specific
+`node_modules` (for example `sharp`), so it must be built on Linux.
+
+Use the GitHub Actions artifact instead:
+
+1. Push to `main` and wait for the Actions run to finish.
+2. Open the repo's **Releases** page. The latest **cPanel standalone build**
+   release has `cpanel-standalone.tar.gz` attached. (The same file is also an
+   Actions artifact named `cpanel-standalone`, but artifacts expire after 14
+   days; the Release does not.)
+3. In cPanel File Manager, go to the app directory outside `public_html`.
+4. Upload `cpanel-standalone.tar.gz` there and extract it so these exist at the
+   top level: `server.js`, `public/`, `.next/`.
+5. Click **Restart** in Node.js Selector.
+
+This is a fully manual alternative to the `deploy` branch. Set
+`NEXT_PUBLIC_SITE_URL` as a GitHub secret before the build, and keep Resend
+variables in Node.js Selector at runtime.
+
+Plain `npm run build` is not enough for this: use `npm run build:cpanel`, which
+copies `public/` and `.next/static/` into the standalone bundle. A plain static
+export (`out/`) also will not work because the site has an API route and
+dynamic metadata routes.
+
 ### Manual fallback with no cron
 
 If your host does not allow cron jobs, just click **Update from Remote** in
