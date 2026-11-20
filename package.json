@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cpanel": "next build && node scripts/cpanel-build.mjs",
     "start": "next start",
+    "start:cpanel": "node server.js",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },

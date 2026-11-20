@@ -1,0 +1,66 @@
+name: Deploy to cPanel
+
+# Builds the standalone bundle on GitHub (where memory is plentiful), uploads
+# it to cPanel, and restarts the Node.js app. This avoids running `next build`
+# or `next dev` inside cPanel's limited LVE.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cpanel-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build standalone bundle
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://prachyabiswas.com' }}
+        run: npm run build:cpanel
+
+      - name: Package standalone bundle
+        run: tar -czf standalone.tar.gz -C .next/standalone .
+
+      - name: Upload bundle to cPanel
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.CPANEL_SSH_KEY }}
+          port: ${{ secrets.CPANEL_SSH_PORT || 22 }}
+          source: standalone.tar.gz
+          target: ${{ secrets.CPANEL_APP_PATH }}
+
+      - name: Extract bundle and restart app
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.CPANEL_SSH_KEY }}
+          port: ${{ secrets.CPANEL_SSH_PORT || 22 }}
+          script: |
+            set -e
+            export CPANEL_APP_PATH='${{ secrets.CPANEL_APP_PATH }}'
+            cd "$CPANEL_APP_PATH"
+            mkdir -p .next/standalone
+            tar -xzf standalone.tar.gz -C .next/standalone
+            rm -f standalone.tar.gz
+            mkdir -p tmp
+            touch tmp/restart.txt
+            echo "Standalone bundle deployed"

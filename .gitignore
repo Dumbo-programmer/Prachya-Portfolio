@@ -13,7 +13,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
-
+id_rsa
 # editors / os
 .vscode/*
 !.vscode/extensions.json

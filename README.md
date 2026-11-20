@@ -1,6 +1,6 @@
 # Prachya Biswas — Portfolio
 
-Personal portfolio for Prachya Biswas, ML and AI Engineer. Built with Next.js App Router, TypeScript, Tailwind CSS, MDX and Resend, deployed on Vercel.
+Personal portfolio for Prachya Biswas, ML and AI Engineer. Built with Next.js App Router, TypeScript, Tailwind CSS, MDX and Resend. Deployable on Vercel or directly on cPanel via its Node.js Selector.
 
 The home page is a single scrolling page: navbar links move between sections. Writing, Notes and Books, Talks and Features, and Blog have their own archive pages, with individual article, note and post pages. It has a dark default theme with a decorative coding atmosphere, plus a clean light theme.
 
@@ -100,7 +100,7 @@ Notes live in `content/notes/` (`group` is `Machine Learning`, `AI` or `Mathemat
 
 Colors, fonts, radius, spacing and shadows are defined once in `app/globals.css` and exposed through `tailwind.config.ts`. Dark is the default; `html.light` switches tokens. The choice is stored in `localStorage` as `portfolio-theme`, and an inline script in `app/layout.tsx` applies it before paint to avoid a flash. Floating controls at the bottom right toggle the theme and scroll to top.
 
-`components/atmospheric-background.tsx` renders the drifting code layer, floating symbols and moving glowing particles in both themes (code appears on both sides of the viewport; particles are stronger in dark mode and subtle in light mode). It is `fixed`, `pointer-events-none`, `aria-hidden="true"`, `data-nosnippet`, respects `prefers-reduced-motion` and reduces elements on mobile.
+`components/atmospheric-background.tsx` renders the drifting code layer, floating symbols and moving glowing star particles in both themes (code appears on the left side only; particles are stronger in dark mode and subtler in light mode). It is `fixed`, `pointer-events-none`, `aria-hidden="true"`, `data-nosnippet`, respects `prefers-reduced-motion` and reduces elements on mobile.
 
 ## Environment variables
 
@@ -131,6 +131,12 @@ The contact form validates in the browser and again on the server, includes a ho
 5. Keep HTTPS enforced (Vercel issues and renews certificates automatically). Do not disable "Redirect HTTP to HTTPS".
 6. Add `www` and redirect it to the apex domain (or the reverse) in the Domains settings. Set `NEXT_PUBLIC_SITE_URL` to the final canonical URL so canonical tags, OG images, sitemap and RSS match.
 7. Submit `https://your-domain/sitemap.xml` to Google Search Console and request indexing for the home page.
+
+## Deployment on cPanel
+
+See [CPANEL_DEPLOY.md](./CPANEL_DEPLOY.md) for full instructions. In short: upload the repo outside `public_html`, set the three environment variables in Node.js Selector, run `npm run build:cpanel`, create the Node.js app with `server.js` as the startup file, and copy `.htaccess.cpanel.example` to `public_html/.htaccess` with the assigned port. `build:cpanel` produces a standalone bundle with `public/` and `.next/static/` copied into it, so the app does not need Vercel to serve assets.
+
+For GitHub auto-deploy, `.github/workflows/deploy-cpanel.yml` builds the standalone bundle on GitHub and uploads it to cPanel, so the shared host never runs `next build`/`next dev`. Add the cPanel SSH secrets documented in [CPANEL_DEPLOY.md](./CPANEL_DEPLOY.md#auto-deploy-from-github); every push to `main` deploys automatically. `scripts/cpanel-deploy.sh` is the alternative cron-based autopull for hosts with enough memory.
 
 ## SEO notes
 
