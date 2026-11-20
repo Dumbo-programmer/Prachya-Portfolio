@@ -1,8 +1,9 @@
 name: Deploy to cPanel
 
-# Builds the standalone bundle on GitHub (where memory is plentiful), uploads
-# it to cPanel, and restarts the Node.js app. This avoids running `next build`
-# or `next dev` inside cPanel's limited LVE.
+# No SSH required. Every push to main builds the standalone bundle on GitHub,
+# commits it to the `deploy` branch, and cPanel pulls that branch on a cron.
+# The deploy branch contains only .next/standalone contents, including its own
+# server.js, public/ and .next/static/.
 
 on:
   push:
@@ -13,12 +14,17 @@ concurrency:
   group: cpanel-deploy
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -34,35 +40,33 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://prachyabiswas.com' }}
         run: npm run build:cpanel
 
-      - name: Package standalone bundle
-        run: tar -czf standalone.tar.gz -C .next/standalone .
+      - name: Publish bundle to deploy branch
+        run: |
+          set -e
+          rm -rf /tmp/cpanel-standalone
+          mkdir -p /tmp/cpanel-standalone
+          cp -R .next/standalone/. /tmp/cpanel-standalone/
 
-      - name: Upload bundle to cPanel
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USER }}
-          key: ${{ secrets.CPANEL_SSH_KEY }}
-          passphrase: ${{ secrets.CPANEL_SSH_PASSPHRASE }}
-          port: ${{ secrets.CPANEL_SSH_PORT || 22 }}
-          source: standalone.tar.gz
-          target: ${{ secrets.CPANEL_APP_PATH }}
+          # Keep the cPanel-side pull helper available on the deploy branch.
+          mkdir -p /tmp/cpanel-standalone/scripts
+          cp scripts/cpanel-cron-pull.sh /tmp/cpanel-standalone/scripts/cpanel-cron-pull.sh
 
-      - name: Extract bundle and restart app
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USER }}
-          key: ${{ secrets.CPANEL_SSH_KEY }}
-          passphrase: ${{ secrets.CPANEL_SSH_PASSPHRASE }}
-          port: ${{ secrets.CPANEL_SSH_PORT || 22 }}
-          script: |
-            set -e
-            export CPANEL_APP_PATH='${{ secrets.CPANEL_APP_PATH }}'
-            cd "$CPANEL_APP_PATH"
-            mkdir -p .next/standalone
-            tar -xzf standalone.tar.gz -C .next/standalone
-            rm -f standalone.tar.gz
-            mkdir -p tmp
-            touch tmp/restart.txt
-            echo "Standalone bundle deployed"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git show-ref --verify --quiet refs/remotes/origin/deploy; then
+            git checkout -B deploy origin/deploy
+          else
+            git checkout -b deploy
+          fi
+
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -R /tmp/cpanel-standalone/. .
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to deploy."
+          else
+            git commit -m "Deploy $GITHUB_SHA"
+            git push origin deploy
+          fi

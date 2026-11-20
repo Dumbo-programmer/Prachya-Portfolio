@@ -98,109 +98,98 @@ Then click **Restart** in Node.js Selector. If the port changes, update
 `public_html/.htaccess`. Server-only env changes need only a restart; changes
 to `NEXT_PUBLIC_SITE_URL` need a rebuild.
 
-## Auto-deploy from GitHub
+## Auto-deploy from GitHub (no SSH required)
 
 The GitHub repo is `https://github.com/Dumbo-programmer/Prachya-Portfolio`
-(default branch `main`). First **commit and push your current work** — the
-server can only pull what is on GitHub.
+(default branch `main`). First **commit and push your current work** — GitHub
+can only build what is on GitHub.
 
-One-time server setup:
+This setup avoids SSH entirely:
 
-1. Clone the repo outside `public_html`:
+- GitHub Actions builds the standalone bundle on a GitHub runner.
+- It commits the built files to a `deploy` branch.
+- cPanel Git Version Control pulls that branch over HTTPS.
+- A cPanel cron job fast-forwards the checkout and restarts the app.
 
-   ```bash
-   cd ~
-   git clone https://github.com/Dumbo-programmer/Prachya-Portfolio.git portfolio
-   ```
+No `npm ci`, `npm run build` or `next dev` ever runs on cPanel.
 
-   Or in **cPanel → Files → Git Version Control**, click **Create**, choose
-   **Clone a Repository**, and use that URL with repository path `portfolio`.
+### One-time setup
 
-2. Keep secrets out of Git. Create `/home/USERNAME/portfolio/.env.production.local`
-   on the server with the real values (it is git-ignored, so `git reset --hard`
-   will not delete it):
+1. **Add one GitHub secret.** In GitHub → **Settings → Secrets and variables →
+   Actions → New repository secret**:
+
+   | Secret | Value |
+   | --- | --- |
+   | `NEXT_PUBLIC_SITE_URL` | `https://prachyabiswas.com` |
+
+   The workflow uses the built-in `GITHUB_TOKEN` to push the `deploy` branch.
+   No SSH keys, hostnames or passwords are needed.
+
+2. **Push to `main`.** The Actions tab will show the workflow building the app
+   and pushing to `deploy`. Wait for it to finish once so the branch exists.
+
+3. **Clone the repo in cPanel.** In **cPanel → Files → Git Version Control**,
+   click **Create**, enable **Clone a Repository**, and use:
 
    ```text
-   NEXT_PUBLIC_SITE_URL=https://prachyabiswas.com
-   RESEND_API_KEY=...
-   CONTACT_TO_EMAIL=...
+   https://github.com/Dumbo-programmer/Prachya-Portfolio.git
    ```
 
-   Also set the same variables in **Node.js Selector → Environment Variables**
-   so the running Node app can read them at runtime.
+   Repository path: `portfolio` (or your preferred directory outside
+   `public_html`).
 
-3. Create the Node.js app once as described above, with startup file
-   `server.js`.
+4. **Switch the checkout to the `deploy` branch.** In the repository **Manage**
+   screen, set **Checked-Out Branch** to `deploy`, then click **Update** /
+   **Update from Remote**. The directory now contains the prebuilt standalone
+   app with `server.js`, `public/` and `.next/static/` at its root.
 
-### Option A — GitHub Actions (recommended: deploys on every push)
+5. **Create the Node.js app** in cPanel:
+   - Application root: the directory from step 3.
+   - Application startup file: `server.js`
+   - Node version: 22.x
+   - Passenger log file: `portfolio.log`
 
-The repo includes `.github/workflows/deploy-cpanel.yml`. It builds the
-standalone bundle on a GitHub runner, uploads it to cPanel, extracts it and
-restarts the app. **No build runs on cPanel**, so shared-hosting LVE memory
-limits are not an issue.
+6. **Set runtime env vars** in **Node.js Selector → Environment Variables**:
 
-In GitHub, go to **Settings → Secrets and variables → Actions → New repository
-secret** and add:
+   ```text
+   RESEND_API_KEY=...
+   CONTACT_TO_EMAIL=...
+   NEXT_PUBLIC_SITE_URL=https://prachyabiswas.com
+   ```
 
-| Secret | Value |
-| --- | --- |
-| `CPANEL_HOST` | Your cPanel hostname or server IP. |
-| `CPANEL_USER` | cPanel username. |
-| `CPANEL_SSH_KEY` | Private SSH key whose public key is installed in cPanel → SSH Access. |
-| `CPANEL_SSH_PASSPHRASE` | Only if the private key is passphrase-protected; otherwise leave unset. |
-| `CPANEL_APP_PATH` | `/home/USERNAME/portfolio` |
-| `CPANEL_SSH_PORT` | The real SSH port shown in cPanel. If unset, the workflow uses `22`. |
-| `NEXT_PUBLIC_SITE_URL` | `https://prachyabiswas.com` (needed at build time). |
+   `NEXT_PUBLIC_SITE_URL` is baked into the build by the GitHub secret, but
+   keeping it here is harmless. Resend values are read at runtime only.
 
-If you see `ssh: this private key is passphrase protected`, either add the
-`CPANEL_SSH_PASSPHRASE` secret or regenerate the key without a passphrase:
+7. **Install the Apache proxy** as described earlier: copy
+   `.htaccess.cpanel.example` to `public_html/.htaccess` and set the port
+   cPanel assigned.
 
-```bash
-ssh-keygen -t ed25519 -N "" -C github-actions
-```
+8. **Add the autopull cron job** in **cPanel → Advanced → Cron Jobs**, every 5
+   minutes:
 
-If you see `connect: connection refused` on port `22`, your host uses a
-different SSH port or SSH is blocked. Check **cPanel → SSH Access** and set
-`CPANEL_SSH_PORT` to that port. Confirm SSH is enabled for your cPanel account.
+   ```cron
+   */5 * * * * /bin/bash /home/USERNAME/repositories/Prachya-Portfolio/scripts/cpanel-cron-pull.sh >> /home/USERNAME/repositories/Prachya-Portfolio/cron-pull.log 2>&1
+   ```
 
-Generate a key locally with `ssh-keygen -t ed25519 -C github-actions`, paste the
-**private** key into `CPANEL_SSH_KEY`, and add the **public** key to cPanel's
-**SSH Access → Manage SSH Keys**.
+   Replace `/home/USERNAME/repositories/Prachya-Portfolio` with your actual
+   repository path. The script is included in the `deploy` branch by the
+   workflow. It pulls GitHub, restarts only when the commit changed, and logs
+   to `cron-pull.log`.
 
-Now push to `main`. The Actions tab will show a workflow that runs `npm ci`,
-`npm run build:cpanel`, tars `.next/standalone`, uploads it, extracts it into
-`/home/USERNAME/portfolio/.next/standalone` and touches `tmp/restart.txt`.
-You can also trigger it manually with **Run workflow**.
+After this, every push to `main` becomes live within about 5 minutes. You can
+also click **Update from Remote** in cPanel Git Version Control to pull sooner.
 
-Because the build happens on GitHub, `NEXT_PUBLIC_SITE_URL` must be a GitHub
-secret. Server-only Resend variables still come from **Node.js Selector →
-Environment Variables** at runtime.
+### Manual fallback with no cron
 
-> If your host uses a password instead of an SSH key, replace `key:` with
-> `password: ${{ secrets.CPANEL_PASSWORD }}` in both the upload and restart
-> steps of the workflow.
-
-### Option B — cPanel cron job (autopull on a schedule)
-
-If you do not want GitHub Actions, add a cron job in **cPanel → Advanced →
-Cron Jobs** that runs every 5 minutes:
-
-```cron
-*/5 * * * * /bin/bash /home/USERNAME/portfolio/scripts/cpanel-deploy.sh >> /home/USERNAME/portfolio/deploy.log 2>&1
-```
-
-This pulls GitHub, rebuilds and restarts automatically, but only every 5
-minutes. It runs `npm run build:cpanel` **on the server**, so it needs enough
-LVE memory. If you hit the WebAssembly/LVE out-of-memory error, use Option A
-instead — GitHub builds the bundle and only uploads the result. If `npm` is not
-found, run `which npm` in cPanel Terminal and add its directory to the `PATH`
-line in `scripts/cpanel-deploy.sh`.
+If your host does not allow cron jobs, just click **Update from Remote** in
+cPanel Git Version Control after each successful Actions run, then click
+**Restart** in Node.js Selector.
 
 ### Restart note
 
-`touch tmp/restart.txt` is Passenger's restart signal and normally restarts a
-cPanel Node.js app. If your host does not react to it, click **Restart** in
-**Node.js Selector** after the first deploy, or ask the host which restart
+`touch tmp/restart.txt` in `scripts/cpanel-cron-pull.sh` is Passenger's restart
+signal and normally restarts a cPanel Node.js app. If your host does not react
+to it, click **Restart** in **Node.js Selector** or ask the host which restart
 hook they support.
 
 ## Troubleshooting
@@ -208,10 +197,10 @@ hook they support.
 | Symptom | Fix |
 | --- | --- |
 | 502 / 503 Bad Gateway | Wrong port in `.htaccess`, app not restarted, or startup file not `server.js`. |
-| `WebAssembly.instantiate(): Out of memory` | You are running `npm run dev` / `next dev` on cPanel, or building inside the LVE. Never run dev mode on the server. Stop the dev process, use startup file `server.js`, and let GitHub Actions build with the workflow above. |
-| `ssh: this private key is passphrase protected` | Add `CPANEL_SSH_PASSPHRASE`, or regenerate the key with `-N ""`. |
-| `dial tcp ...:22: connect: connection refused` | Wrong SSH port/host, SSH disabled, or firewall. Set `CPANEL_SSH_PORT` to the port from cPanel SSH Access. |
-| Page loads but no CSS/JS | `.next/static` was not copied — rerun `npm run build:cpanel` or use the GitHub Actions upload. |
+| `WebAssembly.instantiate(): Out of memory` | You are running `npm run dev` / `next dev` on cPanel, or building inside the LVE. Never build or run dev mode on the server. Let GitHub Actions build the `deploy` branch. |
+| Workflow cannot push `deploy` branch | Ensure `permissions: contents: write` is in the workflow and that the repo's Actions settings allow read/write permissions. |
+| cPanel shows old content after Actions succeeds | Run the autopull cron script or click **Update from Remote** in Git Version Control, then restart the Node app. |
+| Page loads but no CSS/JS | The checkout is not on the `deploy` branch, or the build bundle is incomplete. Re-run the workflow and pull again. |
 | Broken portraits / seminar photos | `public/` was not copied — rerun `npm run build:cpanel`. |
 | Contact form says email is unavailable | Set `RESEND_API_KEY` and `CONTACT_TO_EMAIL`, restart the app. |
 | Wrong canonical URL / OG links | Set `NEXT_PUBLIC_SITE_URL` before rebuilding. |
